@@ -1,9 +1,75 @@
+#[cfg(debug_assertions)]
+mod ping;
+
+mod error;
+
+use std::collections::HashMap;
+use std::future::Future;
+use std::pin::Pin;
+use std::task::{Context, Poll};
+use lazy_static::lazy_static;
+use crate::handler::api::error::api_error;
 use super::*;
 
+/// Future wrapper for the request's Response.
+///
+/// Used by the `API` trait.
+struct ResFuture {
+    pub handler: Pin<Box<dyn Future<Output=Res> + Send>>,
+}
+
+impl Future for ResFuture {
+    type Output = Res;
+
+    fn poll(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
+        let mut pinned = std::pin::pin!(&mut self.handler);
+        pinned.as_mut().poll(cx)
+    }
+}
+
+/// Trait implemented for every API endpoint handler.
+///
+/// More functionality might come, but idk.
+trait API where Self: 'static {
+    /// Creates a handler future that will return a Response to the Request.
+    ///
+    /// The future is wrapped with `ResFuture` struct as
+    /// when trying to return a raw future the compiler bitched around.
+    fn handle(&self, req: Req) -> ResFuture;
+
+    /// Converts itself into trait object.
+    fn into_obj(self) -> Box<dyn API + Sync> where Self: Sized, Self: Sync {
+        Box::new(self)
+    }
+}
+
+/// Lazy loaded map of API endpoint handlers.
+///
+/// It could be a good idea to force the initialization on startup,
+/// or somehow replace it with different technique.
+lazy_static! {
+    static ref API_ENDPOINTS: HashMap<&'static str, Box<dyn API + Sync>> = {
+        let mut map = HashMap::new();
+
+        #[cfg(debug_assertions)]
+        map.insert("/ping", ping::Ping.into_obj());
+
+        map
+    };
+}
+
+/// This function will call a specific API endpoint handler based on the given `api_path`.
 pub async fn handle_api_endpoint(api_path: &str, req: Req) -> Res {
-    Response::new(
-        Full::new(
-            Bytes::from("{}")
-        )
-    )
+    if let Some(api_endpoint) = API_ENDPOINTS.get(api_path) {
+        api_endpoint.handle(req).await
+    } else {
+        debug!("Not Found");
+        let err = api_error!(InvalidEndpoint);
+        Response::builder()
+            .status(err.code)
+            .body(Full::new(Bytes::from(
+                serde_json::to_string(&err).unwrap()
+            )))
+            .unwrap()
+    }
 }

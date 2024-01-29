@@ -1,6 +1,9 @@
 #[macro_use]
 extern crate tracing;
 
+#[macro_use]
+extern crate serde;
+
 mod logs;
 mod handler;
 
