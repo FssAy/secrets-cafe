@@ -43,11 +43,11 @@ trait API where Self: 'static {
     }
 }
 
-/// Lazy loaded map of API endpoint handlers.
-///
-/// It could be a good idea to force the initialization on startup,
-/// or somehow replace it with different technique.
 lazy_static! {
+    /// Lazy loaded map of API endpoint handlers.
+    ///
+    /// It could be a good idea to force the initialization on startup,
+    /// or somehow replace it with different technique.
     static ref API_ENDPOINTS: HashMap<&'static str, Box<dyn API + Sync>> = {
         let mut map = HashMap::new();
 

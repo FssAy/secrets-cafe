@@ -1,5 +1,4 @@
 use tracing_subscriber::FmtSubscriber;
-use tracing_subscriber::util::SubscriberInitExt;
 
 pub fn init() {
     FmtSubscriber::builder()

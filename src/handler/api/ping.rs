@@ -1,4 +1,3 @@
-use std::pin::pin;
 use super::*;
 
 #[derive(Serialize)]
