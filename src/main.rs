@@ -1,3 +1,8 @@
+#[macro_use]
+extern crate tracing;
+
+mod logs;
+
 use std::convert::Infallible;
 use std::net::SocketAddr;
 
@@ -11,14 +16,17 @@ use tokio::net::TcpListener;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+    logs::init();
+
     let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
 
-    // We create a TcpListener and bind it to 127.0.0.1:3000
-    let listener = TcpListener::bind(addr).await?;
+    let listener = TcpListener::bind(&addr).await?;
+    info!("Running the HTTP server on: {}", addr);
 
     // We start a loop to continuously accept incoming connections
     loop {
-        let (stream, _) = listener.accept().await?;
+        let (stream, addr) = listener.accept().await?;
+        debug!("[{}] new connection", addr);
 
         // Use an adapter to access something implementing `tokio::io` traits as if they implement
         // `hyper::rt` IO traits.
