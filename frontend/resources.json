@@ -2,7 +2,10 @@
   "pages": [
     "index.html"
   ],
-  "styles": [],
+  "styles": [
+    "index.css",
+    "style.css"
+  ],
   "scripts": [],
   "other": []
 }
