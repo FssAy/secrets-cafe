@@ -530,6 +530,7 @@ dependencies = [
  "hyper",
  "hyper-util",
  "lazy_static",
+ "once_cell",
  "serde",
  "serde_json",
  "tokio",
