@@ -1,3 +1,5 @@
+// todo: refactor
+
 use super::*;
 use std::path::{Path, PathBuf};
 use hyper::header::HeaderValue;
@@ -7,15 +9,20 @@ use tokio::io::AsyncReadExt;
 const FRONTEND_FOLDER_PATH: &str = "frontend";
 const RESOURCE_SETTINGS_FILE: &str = "resources.json";
 
+/// Structure of the settings file with paths to frontend files to load and expose.
 #[derive(Deserialize, Debug, Clone)]
 pub struct ResourceSettings {
+    /// HTML pages.
     pub pages: Vec<PathBuf>,
+    /// JavaScript files.
     pub scripts: Vec<PathBuf>,
+    /// Any other file that should be exposed.
     pub other: Vec<PathBuf>,
 }
 
 impl ResourceSettings {
     // todo: error handling
+    /// Loads the resource settings from the file.
     pub async fn from_file() -> Self {
         let path = Path::new(RESOURCE_SETTINGS_FILE);
         let file_contents = Self::read_frontend_file(path).await;
@@ -23,6 +30,7 @@ impl ResourceSettings {
     }
 
     // todo: error handling
+    /// Reads through the settings and loads frontend files into the `ResourceMap`.
     pub async fn into_resource_map(self) -> ResourceMap {
         let mut map = ResourceMap::new();
 
@@ -54,6 +62,7 @@ impl ResourceSettings {
     }
 
     // todo: error handling
+    /// Reads a specific frontend file and puts it inside the `ResourceMap`.
     async fn load_and_insert_resource(map: &mut ResourceMap, path: impl AsRef<Path>, mime: &'static str) {
         let path = path.as_ref();
 
@@ -69,6 +78,7 @@ impl ResourceSettings {
     }
 
     // todo: error handling
+    /// Reads a specific frontend file.
     async fn read_frontend_file(path: impl AsRef<Path>) -> Vec<u8> {
         let path = Path::new(FRONTEND_FOLDER_PATH).join(path.as_ref());
         let mut buffer = Vec::new();
@@ -87,6 +97,7 @@ impl ResourceSettings {
         buffer
     }
 
+    /// Converts the file path of a frontend file into a valid URI.
     fn parse_file_path(path: impl AsRef<Path>) -> String {
         let path = path.as_ref();
 
@@ -102,6 +113,9 @@ impl ResourceSettings {
     }
 }
 
+// todo: add more MIME types
+// todo: refactor into using file extensions and not file names
+/// Returns a MIME type based on the file extension.
 fn file_name_to_mime(file_name: &str) -> &'static str {
     match file_name {
         _ => "application/octet-stream",
