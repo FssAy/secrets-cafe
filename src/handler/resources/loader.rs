@@ -14,6 +14,8 @@ const RESOURCE_SETTINGS_FILE: &str = "resources.json";
 pub struct ResourceSettings {
     /// HTML pages.
     pub pages: Vec<PathBuf>,
+    /// CSS style files.
+    pub styles: Vec<PathBuf>,
     /// JavaScript files.
     pub scripts: Vec<PathBuf>,
     /// Any other file that should be exposed.
@@ -36,6 +38,10 @@ impl ResourceSettings {
 
         for page_path in self.pages {
             Self::load_and_insert_resource(&mut map, page_path, "text/html").await;
+        }
+
+        for style_path in self.styles {
+            Self::load_and_insert_resource(&mut map, style_path, "text/css").await;
         }
 
         for script_path in self.scripts {
