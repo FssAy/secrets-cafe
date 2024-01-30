@@ -30,7 +30,8 @@ fn make_filter() -> String {
     };
 
     format!(
-        "{}={}",
+        "{}={},{}={}",
         "secrets_cafe", get_level(),
+        "surrealdb", "warn",
     )
 }
