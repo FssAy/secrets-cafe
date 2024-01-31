@@ -42,7 +42,7 @@ impl From<surrealdb::Error> for ApiError {
         use surrealdb::err::Error::*;
 
         #[cfg(test)] {
-            println!("{}", err);
+            println!("[ERROR] {}", err);
         }
 
         #[cfg(debug_assertions)] {
