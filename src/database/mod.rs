@@ -3,8 +3,7 @@ pub mod types;
 mod calls;
 
 use std::ops::Deref;
-use once_cell::sync::OnceCell;
-use surrealdb::engine::local::{Db, RocksDb};
+use surrealdb::engine::local::Db;
 use surrealdb::Surreal;
 
 type SurrealClient = Surreal<Db>;
@@ -13,7 +12,7 @@ type SurrealClient = Surreal<Db>;
 const DB_PATH: &str = "secrets-cafe.db";
 
 #[cfg(not(test))]
-static DB_INST: OnceCell<Database> = OnceCell::new();
+static DB_INST: once_cell::sync::OnceCell<Database> = once_cell::sync::OnceCell::new();
 
 #[derive(Debug, Clone)]
 pub struct Database {
@@ -29,12 +28,14 @@ impl Database {
             .strict();
 
         #[cfg(not(test))]
-        let client: SurrealClient = Surreal::new::<RocksDb>(
+        let client: SurrealClient = Surreal::new::<surrealdb::engine::local::RocksDb>(
             (DB_PATH, db_config)
         ).await?;
 
         #[cfg(test)]
-        let client: SurrealClient = Surreal::new::<surrealdb::engine::local::Mem>(db_config).await?;
+        let client: SurrealClient = Surreal::new::<surrealdb::engine::local::Mem>(
+            db_config
+        ).await?;
 
         let db = Self { client };
         db.build().await?;
