@@ -4,6 +4,9 @@ extern crate tracing;
 #[macro_use]
 extern crate serde;
 
+#[cfg(test)]
+mod tests;
+
 mod logs;
 mod handler;
 mod database;

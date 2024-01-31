@@ -31,6 +31,14 @@ pub struct ApiError {
 
 impl From<surrealdb::Error> for ApiError {
     fn from(err: surrealdb::Error) -> Self {
+        #[cfg(test)] {
+            println!("{}", err);
+        }
+
+        #[cfg(debug_assertions)] {
+            error!("{}", err);
+        }
+
         match err {
             surrealdb::Error::Db(err_db) => match err_db {
                 // todo: find out which variants should return different error

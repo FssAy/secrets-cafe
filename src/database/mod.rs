@@ -9,6 +9,7 @@ use surrealdb::Surreal;
 
 type SurrealClient = Surreal<Db>;
 
+#[cfg(not(test))]
 const DB_PATH: &str = "secrets-cafe.db";
 
 static DB_INST: OnceCell<Database> = OnceCell::new();
@@ -26,9 +27,13 @@ impl Database {
         let db_config = surrealdb::opt::Config::default()
             .strict();
 
+        #[cfg(not(test))]
         let client: SurrealClient = Surreal::new::<RocksDb>(
             (DB_PATH, db_config)
         ).await?;
+
+        #[cfg(test)]
+        let client: SurrealClient = Surreal::new::<surrealdb::engine::local::Mem>(db_config).await?;
 
         let db = Self { client };
         db.build().await?;
