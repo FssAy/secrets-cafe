@@ -12,6 +12,7 @@ type SurrealClient = Surreal<Db>;
 #[cfg(not(test))]
 const DB_PATH: &str = "secrets-cafe.db";
 
+#[cfg(not(test))]
 static DB_INST: OnceCell<Database> = OnceCell::new();
 
 #[derive(Debug, Clone)]
@@ -48,6 +49,7 @@ impl Database {
     ///
     /// Can return an error only when creating a new database instance,
     /// so it's safe to unwrap result after calling it once with a success.
+    #[cfg(not(test))]
     pub async fn get() -> anyhow::Result<Database> {
         if let Some(db) = DB_INST.get() {
             Ok(db.clone())
@@ -60,6 +62,11 @@ impl Database {
 
             Ok(db)
         }
+    }
+
+    #[cfg(test)]
+    pub async fn get() -> anyhow::Result<Database> {
+        Self::init().await
     }
 
     /// Builds the database by calling the `build` query.
