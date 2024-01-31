@@ -19,9 +19,8 @@ async fn create_mod() {
 
     db.create_mod("mod1", "2137", ModTier::Dev).await.expect("Call failed!");
 
-    // todo: fix, name uniques doesn't work
-    // assert!(
-    //     db.create_mod("mod1", "1123581321", ModTier::Admin).await.is_err(),
-    //     "Created a second mod with the same name!",
-    // );
+    assert!(
+        db.create_mod("mod1", "1123581321", ModTier::Admin).await.is_err(),
+        "Created a second mod with the same name!",
+    );
 }

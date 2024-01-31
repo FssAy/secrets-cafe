@@ -14,7 +14,7 @@ DEFINE TABLE mod SCHEMAFULL;
 DEFINE FIELD name ON TABLE mod TYPE string;
 DEFINE FIELD phash ON TABLE mod TYPE string;
 DEFINE FIELD tier ON TABLE mod TYPE int;
-DEFINE INDEX i_mod_name ON TABLE mod UNIQUE;
+DEFINE INDEX i_mod_name ON TABLE mod FIELDS name UNIQUE;
 
 DEFINE TABLE verified;
 DEFINE FIELD at ON TABLE verified TYPE datetime VALUE time::now();

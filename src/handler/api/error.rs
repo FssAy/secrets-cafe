@@ -13,6 +13,13 @@ macro_rules! api_error {
             error: crate::handler::api::error::ApiErrorType::DatabaseError,
         }
     };
+
+    (AlreadyExists) => {
+        crate::handler::api::error::ApiError {
+            code: 409,
+            error: crate::handler::api::error::ApiErrorType::AlreadyExists,
+        }
+    }
 }
 
 pub(crate) use api_error;
@@ -21,6 +28,7 @@ pub(crate) use api_error;
 pub enum ApiErrorType {
     InvalidEndpoint,
     DatabaseError,
+    AlreadyExists,
 }
 
 #[derive(Serialize, Debug, Clone)]
@@ -31,6 +39,8 @@ pub struct ApiError {
 
 impl From<surrealdb::Error> for ApiError {
     fn from(err: surrealdb::Error) -> Self {
+        use surrealdb::err::Error::*;
+
         #[cfg(test)] {
             println!("{}", err);
         }
@@ -42,7 +52,8 @@ impl From<surrealdb::Error> for ApiError {
         match err {
             surrealdb::Error::Db(err_db) => match err_db {
                 // todo: find out which variants should return different error
-                _ => api_error!(DatabaseError)
+                RecordExists{..} | IndexExists{..} => api_error!(AlreadyExists),
+                _ => api_error!(DatabaseError),
             }
             surrealdb::Error::Api(err_db_api) => match err_db_api {
                 // todo: find out which variants should return different error
