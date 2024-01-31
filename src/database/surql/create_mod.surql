@@ -1,0 +1,1 @@
+CREATE ONLY mod SET name=$mod_name, phash=$phash, tier=$tier RETURN id;

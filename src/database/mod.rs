@@ -1,5 +1,5 @@
 mod surql;
-mod types;
+pub mod types;
 mod calls;
 
 use std::ops::Deref;
