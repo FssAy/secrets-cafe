@@ -1,4 +1,4 @@
-mod api;
+pub mod api;
 mod resources;
 
 use std::convert::Infallible;

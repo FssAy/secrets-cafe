@@ -1,7 +1,7 @@
 #[cfg(debug_assertions)]
 mod ping;
 
-mod error;
+pub mod error;
 
 use std::collections::HashMap;
 use std::future::Future;
