@@ -5,4 +5,22 @@ USE DB main;
 
 BEGIN TRANSACTION;
 
+DEFINE TABLE post SCHEMAFULL;
+DEFINE FIELD content ON TABLE post TYPE string;
+DEFINE FIELD at ON TABLE post TYPE datetime VALUE time::now();
+DEFINE FIELD state ON TABLE post TYPE int DEFAULT 0;
+
+DEFINE TABLE mod SCHEMAFULL;
+DEFINE FIELD name ON TABLE mod TYPE string;
+DEFINE FIELD phash ON TABLE mod TYPE string;
+DEFINE FIELD tier ON TABLE mod TYPE int;
+DEFINE INDEX i_mod_name ON TABLE mod UNIQUE;
+
+DEFINE TABLE verified;
+DEFINE FIELD at ON TABLE verified TYPE datetime VALUE time::now();
+
+DEFINE TABLE rejected;
+DEFINE FIELD at ON TABLE verified TYPE datetime VALUE time::now();
+DEFINE FIELD reason ON TABLE verified TYPE string;
+
 COMMIT TRANSACTION;
