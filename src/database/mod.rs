@@ -1,5 +1,6 @@
 mod surql;
 mod types;
+mod calls;
 
 use std::ops::Deref;
 use once_cell::sync::OnceCell;

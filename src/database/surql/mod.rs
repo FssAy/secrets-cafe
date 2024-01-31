@@ -12,4 +12,5 @@ macro_rules! surql {
 
 surql! {
     build,
+    create_post,
 }

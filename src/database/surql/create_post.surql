@@ -1,0 +1,1 @@
+CREATE post SET content = $content RETURN id;
