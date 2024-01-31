@@ -6,6 +6,13 @@ macro_rules! api_error {
             error: crate::handler::api::error::ApiErrorType::InvalidEndpoint,
         }
     };
+
+    (DatabaseError) => {
+        crate::handler::api::error::ApiError {
+            code: 500,
+            error: crate::handler::api::error::ApiErrorType::DatabaseError,
+        }
+    };
 }
 
 pub(crate) use api_error;
@@ -13,6 +20,7 @@ pub(crate) use api_error;
 #[derive(Serialize, Debug, Clone)]
 pub enum ApiErrorType {
     InvalidEndpoint,
+    DatabaseError,
 }
 
 #[derive(Serialize, Debug, Clone)]
