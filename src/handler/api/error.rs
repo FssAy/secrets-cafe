@@ -28,3 +28,18 @@ pub struct ApiError {
     pub code: u16,
     pub error: ApiErrorType,
 }
+
+impl From<surrealdb::Error> for ApiError {
+    fn from(err: surrealdb::Error) -> Self {
+        match err {
+            surrealdb::Error::Db(err_db) => match err_db {
+                // todo: find out which variants should return different error
+                _ => api_error!(DatabaseError)
+            }
+            surrealdb::Error::Api(err_db_api) => match err_db_api {
+                // todo: find out which variants should return different error
+                _ => api_error!(DatabaseError)
+            }
+        }
+    }
+}
