@@ -2800,6 +2800,7 @@ dependencies = [
  "paste",
  "serde",
  "serde_json",
+ "sha2",
  "surrealdb",
  "tokio",
  "tracing",

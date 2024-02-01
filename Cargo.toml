@@ -21,6 +21,7 @@ bcrypt = "0.15"
 chrono = "0.4"
 hmac = "0.12.1"
 base64 = "0.21"
+sha2 = "0.10.8"
 
 [target.'cfg(windows)'.dependencies]
 ansi_term = "0.12.1"
