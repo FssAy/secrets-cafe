@@ -14,4 +14,5 @@ surql! {
     build,
     create_post,
     create_mod,
+    get_mod_login_info,
 }

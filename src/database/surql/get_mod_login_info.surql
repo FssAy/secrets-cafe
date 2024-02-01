@@ -1,0 +1,1 @@
+SELECT id, phash FROM mod WHERE name=$mod_name;

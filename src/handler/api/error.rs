@@ -19,7 +19,14 @@ macro_rules! api_error {
             code: 409,
             error: crate::handler::api::error::ApiErrorType::AlreadyExists,
         }
-    }
+    };
+
+    (InvalidPassword) => {
+        crate::handler::api::error::ApiError {
+            code: 401,
+            error: crate::handler::api::error::ApiErrorType::InvalidPassword,
+        }
+    };
 }
 
 pub(crate) use api_error;
@@ -29,6 +36,7 @@ pub enum ApiErrorType {
     InvalidEndpoint,
     DatabaseError,
     AlreadyExists,
+    InvalidPassword,
 }
 
 #[derive(Serialize, Debug, Clone)]
