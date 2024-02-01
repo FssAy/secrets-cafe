@@ -2788,7 +2788,10 @@ version = "0.1.0"
 dependencies = [
  "ansi_term",
  "anyhow",
+ "base64",
  "bcrypt",
+ "chrono",
+ "hmac",
  "http-body-util",
  "hyper 1.1.0",
  "hyper-util",

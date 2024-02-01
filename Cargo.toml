@@ -18,6 +18,9 @@ surrealdb = { version = "1.1.1", features = ["kv-rocksdb", "kv-mem"] }
 anyhow = "1.0"
 paste = "1.0"
 bcrypt = "0.15"
+chrono = "0.4"
+hmac = "0.12.1"
+base64 = "0.21"
 
 [target.'cfg(windows)'.dependencies]
 ansi_term = "0.12.1"
