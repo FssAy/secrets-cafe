@@ -156,6 +156,10 @@
           </div>
           <div id="div-editor" class="write-editor hidden">
             <div id="div-tiny-editor" style="width: 100%; height: 100%; font-family: unset !important;" data-fontname="no"></div>
+
+            <button type="button" class="submit-button button" onclick="submit()">
+              Submit
+            </button>
           </div>
           <div
             class="page-spacer-page-spacer page-spacer-root-class-name1"
@@ -181,6 +185,7 @@
       const divMain = document.getElementById('div-main');
       const divEditor = document.getElementById('div-editor');
       const divTinyEditor = document.getElementById('div-tiny-editor');
+      let textBuffer = '';
 
       function enableEditor() {
         divMain.classList.add('hidden');
@@ -195,9 +200,19 @@
         document.querySelectorAll('[data-tiny-editor]')
           .forEach((editor) => {
             editor.addEventListener('input', (e) => {
-              console.log(e.target.innerHTML);
+              textBuffer = e.target.innerHTML;
             });
           });
+      }
+
+      function submit() {
+        const confirmed = confirm("Are you sure you want to submit your text?");
+        if (!confirmed) {
+          alert('Failed to confirm!');
+          return;
+        }
+
+        alert(`Confirmed with text with length: ${textBuffer.length}`);
       }
     </script>
   </body>

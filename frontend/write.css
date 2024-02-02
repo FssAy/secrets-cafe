@@ -310,6 +310,10 @@
   width: 100%;
   margin-top: var(--dl-space-space-unit);
 }
+.submit-button {
+  width: 100%;
+  margin-top: var(--dl-space-space-unit);
+}
 .write-editor {
   flex: 0 0 auto;
   height: auto;
