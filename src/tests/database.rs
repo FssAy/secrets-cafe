@@ -17,7 +17,7 @@ async fn create_post() {
 async fn moderator() {
     let db = get_db().await;
 
-    db.create_mod("mod1", "2137", ModTier::Dev).await.expect("Call failed!");
+    let mod1_id = db.create_mod("mod1", "2137", ModTier::Dev).await.expect("Call failed!");
 
     assert!(
         db.create_mod("mod1", "1123581321", ModTier::Admin).await.is_err(),
@@ -25,4 +25,11 @@ async fn moderator() {
     );
 
     db.create_mod_session("mod1", "2137").await.expect("Failed to create mod session!");
+
+    db.update_mod_tier("mod1", ModTier::Verifier).await.expect("Failed to update mod tier!");
+    assert!(
+        db.update_mod_tier(&mod1_id, ModTier::Dev).await.is_err(),
+        "Updated mod by it's ID without the table name!"
+    );
+    db.update_mod_tier(format!("mod:{}", mod1_id), ModTier::Dev).await.expect("Failed to update mod tier!");
 }

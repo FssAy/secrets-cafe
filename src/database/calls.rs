@@ -1,4 +1,4 @@
-use surrealdb::sql::Thing;
+use surrealdb::sql::{Id, Thing};
 use crate::database::types::{ModTier, SessionToken};
 use crate::handler::api::error::{api_error, ApiError};
 use super::*;
@@ -73,5 +73,33 @@ impl Database {
             .pack();
 
         Ok(token)
+    }
+
+    pub async fn update_mod_tier(
+        &self,
+        input: impl AsRef<str>,
+        new_tier: ModTier,
+    ) -> Result<(), ApiError> {
+        let mut query = self
+            .query(surql::UPDATE_MOD_TIER)
+            .bind(("tier", new_tier as u8));
+
+        query = if let Some((table, id)) = input.as_ref().split_once(':') {
+            query.bind(("input", Thing {
+                tb: table.to_string(),
+                id: Id::String(id.to_string()),
+            } ))
+        } else {
+            query.bind(("input", input.as_ref()))
+        };
+
+        let mod_id = query
+            .await?
+            .take::<Option<Thing>>((0, "id"))?;
+
+        match mod_id {
+            None => Err(api_error!(ModNotFound)),
+            Some(_) => Ok(())
+        }
     }
 }

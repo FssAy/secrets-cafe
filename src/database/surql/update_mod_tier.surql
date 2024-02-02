@@ -1,0 +1,1 @@
+UPDATE mod SET tier=$tier WHERE id=$input OR name=$input RETURN id;

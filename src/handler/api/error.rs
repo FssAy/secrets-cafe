@@ -27,6 +27,13 @@ macro_rules! api_error {
             error: crate::handler::api::error::ApiErrorType::InvalidPassword,
         }
     };
+
+    (ModNotFound) => {
+        crate::handler::api::error::ApiError {
+            code: 404,
+            error: crate::handler::api::error::ApiErrorType::ModNotFound,
+        }
+    };
 }
 
 pub(crate) use api_error;
@@ -37,6 +44,7 @@ pub enum ApiErrorType {
     DatabaseError,
     AlreadyExists,
     InvalidPassword,
+    ModNotFound,
 }
 
 #[derive(Serialize, Debug, Clone)]
