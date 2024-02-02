@@ -587,6 +587,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "command-engine"
+version = "0.7.1"
+source = "git+https://github.com/VulcoLibs/command-engine#b4066874cbef534d0dfeeb437882d543d0f5426d"
+dependencies = [
+ "async-trait",
+ "lazy_static",
+ "tokio",
+]
+
+[[package]]
 name = "concurrent-queue"
 version = "2.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2791,6 +2801,7 @@ dependencies = [
  "base64",
  "bcrypt",
  "chrono",
+ "command-engine",
  "hmac",
  "http-body-util",
  "hyper 1.1.0",

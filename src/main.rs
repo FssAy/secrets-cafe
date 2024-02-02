@@ -10,6 +10,7 @@ mod tests;
 mod logs;
 mod handler;
 mod database;
+mod console;
 
 use std::net::SocketAddr;
 use hyper::server::conn::http1;
@@ -17,6 +18,7 @@ use hyper::service::service_fn;
 use hyper_util::rt::TokioIo;
 use tokio::net::TcpListener;
 use database::Database;
+use console::Console;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
@@ -27,6 +29,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
 
     let listener = TcpListener::bind(&server_addr).await?;
     info!("Running the HTTP server on: {}", server_addr);
+
+    Console::new().await?.start();
 
     loop {
         let (stream, addr) = listener.accept().await?;
