@@ -23,8 +23,8 @@ pub enum TokenError {
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct SessionToken {
-    user_id: String,
-    expiration: i64,
+    pub user_id: String,
+    pub expiration: i64,
 }
 
 #[derive(Debug, Clone)]
