@@ -2,16 +2,18 @@
 #[repr(u8)]
 #[derive(Copy, Clone, Debug, Default)]
 pub enum ModTier {
-    /// Can verify posts and mark them for deletion.
+    /// No additional permissions.
     #[default]
-    Verifier = 0,
+    None = 0,
+    /// Can verify posts and mark them for deletion.
+    Verifier = 1,
     /// Can fully remove posts without additional supervision.
-    Remover = 1,
+    Remover = 2,
     /// Has full permissions to do everything.
-    Admin = 2,
+    Admin = 3,
     // if adding tier above the last one make sure to update Self::is_raw_in_bounds
     /// Same as admin, but also have access to unsafe features.
-    Dev = 3,
+    Dev = 4,
 }
 
 impl ModTier {
