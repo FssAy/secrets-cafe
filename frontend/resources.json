@@ -13,7 +13,8 @@
     "write.css"
   ],
   "scripts": [
-    "libs/tiny-editor.js"
+    "libs/tiny-editor.js",
+    "libs/purify.js"
   ],
   "other": []
 }
