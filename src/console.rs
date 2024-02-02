@@ -26,6 +26,8 @@ impl Console {
         #[cfg(debug_assertions)]
         self.engine.add(commands::debug::Debug).await?;
 
+        self.engine.add(commands::Mod).await?;
+
         Ok(())
     }
 
