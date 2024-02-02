@@ -32,4 +32,8 @@ async fn moderator() {
         "Updated mod by it's ID without the table name!"
     );
     db.update_mod_tier(format!("mod:{}", mod1_id), ModTier::Dev).await.expect("Failed to update mod tier!");
+
+    db.update_mod_password("mod1", "2137", "1234").await.expect("Failed to update mod password!");
+    // todo: check here if previously created session will be valid (it will be for the 0.X releases)
+    db.create_mod_session("mod1", "1234").await.expect("Failed to create mod session after password change!");
 }

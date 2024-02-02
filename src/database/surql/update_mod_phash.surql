@@ -1,0 +1,1 @@
+UPDATE mod SET phash=$phash WHERE id=$mod_id RETURN id;
