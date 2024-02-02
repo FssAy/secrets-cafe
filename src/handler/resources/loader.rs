@@ -64,6 +64,12 @@ impl ResourceSettings {
             );
         }
 
+        #[cfg(debug_assertions)] {
+            for (key, value) in &map {
+                debug!("Exposing endpoint: [{}] with mime [{:?}]", key, value.mime);
+            }
+        }
+
         map
     }
 
@@ -111,10 +117,16 @@ impl ResourceSettings {
             return String::from("/");
         }
 
-        if !path.starts_with("/") {
+        let endpoint = if !path.starts_with("/") {
             format!("/{}", path.display())
         } else {
             format!("{}", path.display())
+        };
+
+        if endpoint.ends_with(".html") {
+            endpoint.replace(".html", "")
+        } else {
+            endpoint
         }
     }
 }
