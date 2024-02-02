@@ -1,11 +1,19 @@
 {
   "pages": [
-    "index.html"
+    "index.html",
+    "browse.html",
+    "rules.html",
+    "write.html"
   ],
   "styles": [
     "index.css",
-    "style.css"
+    "style.css",
+    "browse.css",
+    "rules.css",
+    "write.css"
   ],
-  "scripts": [],
+  "scripts": [
+    "libs/tiny-editor.js"
+  ],
   "other": []
 }
