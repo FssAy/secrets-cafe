@@ -2,6 +2,15 @@ use crate::database::Database;
 use crate::database::types::ModTier;
 use super::*;
 
+macro_rules! get_database {
+    () => {
+        match Database::get().await {
+            Ok(database) => database,
+            Err(err) => return Output::new_error(4, Some(err.to_string())),
+        }
+    };
+}
+
 pub struct Mod;
 
 impl CommandInfo for Mod {
@@ -23,10 +32,7 @@ impl Command for Mod {
 
         match arg_operation.as_str() {
             "add" => {
-                let db: Database = match Database::get().await {
-                    Ok(database) => database,
-                    Err(err) => return Output::new_error(4, Some(err.to_string())),
-                };
+                let db: Database = get_database!();
 
                 let name = get_arg!(args, 1, Output::new_error(1, Some("missing mod name [mod add <name> <pass> <tier>]")));
                 let pass = get_arg!(args, 2, Output::new_error(1, Some("missing mod pass [mod add <name> <pass> <tier>]")));
@@ -45,6 +51,25 @@ impl Command for Mod {
                     Err(err) => Output::new_error(4, Some(format!("{:?}", err))),
                 }
             },
+            "authorise" => {
+                let db: Database = get_database!();
+
+                let input = get_arg!(args, 1, Output::new_error(1, Some("missing input [mod authorise <input> <tier>]")));
+
+                let tier = match ModTier::try_from(
+                    get_arg!(args, 2, Output::new_error(1, Some("missing mod tier [mod authorise <input> <tier>]")))
+                ) {
+                    Ok(tier) => tier,
+                    Err(_) => {
+                        return Output::new_error(3, Some("invalid tier"))
+                    }
+                };
+
+                match db.update_mod_tier(input, tier).await {
+                    Ok(_) => Output::new_ok(0, Some(format!("Changed mod's ({}) tier to: {:?}", input, tier))),
+                    Err(err) => Output::new_error(4, Some(format!("{:?}", err))),
+                }
+            }
             unknown => Output::new_error(2, Some(format!(
                 "unknown operation argument ({})", unknown,
             ))),
