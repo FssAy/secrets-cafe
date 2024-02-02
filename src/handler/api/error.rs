@@ -28,6 +28,13 @@ macro_rules! api_error {
         }
     };
 
+    (InvalidSessionToken) => {
+        crate::handler::api::error::ApiError {
+            code: 401,
+            error: crate::handler::api::error::ApiErrorType::InvalidSessionToken,
+        }
+    };
+
     (ModNotFound) => {
         crate::handler::api::error::ApiError {
             code: 404,
@@ -37,6 +44,7 @@ macro_rules! api_error {
 }
 
 pub(crate) use api_error;
+use crate::database::types::TokenError;
 
 #[derive(Serialize, Debug, Clone)]
 pub enum ApiErrorType {
@@ -44,6 +52,7 @@ pub enum ApiErrorType {
     DatabaseError,
     AlreadyExists,
     InvalidPassword,
+    InvalidSessionToken,
     ModNotFound,
 }
 
@@ -76,5 +85,12 @@ impl From<surrealdb::Error> for ApiError {
                 _ => api_error!(DatabaseError)
             }
         }
+    }
+}
+
+// should be used only for reading the token
+impl From<TokenError> for ApiError {
+    fn from(_: TokenError) -> Self {
+        api_error!(InvalidSessionToken)
     }
 }
