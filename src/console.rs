@@ -25,8 +25,8 @@ impl Console {
     async fn add_commands(&self) -> Result<(), command_engine::shared::error::Error> {
         #[cfg(debug_assertions)]
         self.engine.add(commands::debug::Debug).await?;
-
         self.engine.add(commands::Mod).await?;
+        self.engine.add(commands::Reload).await?;
 
         Ok(())
     }

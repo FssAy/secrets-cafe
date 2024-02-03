@@ -28,6 +28,25 @@ async fn init_resource_map() -> &'static RwLock<ResourceMap> {
     RESOURCES.get().unwrap()
 }
 
+/// Reloads the resource map.
+pub(crate) async fn reload_resource_map() {
+    let resources = if let Some(resources) = RESOURCES.get() {
+        resources
+    } else {
+        init_resource_map().await;
+        return;
+    };
+
+    let resource_map = loader::ResourceSettings::from_file()
+        .await
+        .into_resource_map()
+        .await;
+
+    let mut lock = resources.write().await;
+    *lock = resource_map;
+    drop(lock);
+}
+
 pub async fn handle_resource_endpoint(resource_path: &str, _req: Req) -> Res {
     let resources = if let Some(resources) = RESOURCES.get() {
         resources

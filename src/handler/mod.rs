@@ -6,6 +6,8 @@ use http_body_util::Full;
 use hyper::body::Bytes;
 use hyper::{Request, Response};
 
+pub(crate) use resources::reload_resource_map;
+
 pub type Req = Request<hyper::body::Incoming>;
 pub type Res = Response<Full<Bytes>>;
 

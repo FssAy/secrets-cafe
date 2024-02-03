@@ -27,6 +27,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
 
     let server_addr = SocketAddr::from(([127, 0, 0, 1], 3000));
 
+    #[cfg(not(debug_assertions))] {
+        handler::reload_resource_map().await;
+    }
+
     let listener = TcpListener::bind(&server_addr).await?;
     info!("Running the HTTP server on: {}", server_addr);
 

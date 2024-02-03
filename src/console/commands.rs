@@ -2,9 +2,11 @@
 pub mod debug;
 
 mod database;
+mod reload;
 
 use command_engine::{*, shared::*};
 pub use database::*;
+pub use reload::*;
 
 macro_rules! get_arg {
     ($args:ident, $pos:literal, $err:expr) => {
