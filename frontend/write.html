@@ -151,7 +151,9 @@
             <button type="button" class="write-button1 button" onclick="enableEditor()">I Agree</button>
           </div>
           <div id="div-editor" class="write-editor hidden">
-            <div id="div-tiny-editor" style="width: 100%; height: 100%; font-family: unset !important;" data-fontname="no"></div>
+            <!--<div id="div-post-preview" class="post-view"></div>-->
+
+            <div id="div-tiny-editor" data-fontname="no"></div>
 
             <button type="button" class="submit-button button" onclick="submit()">
               Submit
@@ -181,6 +183,7 @@
       const divMain = document.getElementById('div-main');
       const divEditor = document.getElementById('div-editor');
       const divTinyEditor = document.getElementById('div-tiny-editor');
+      // const divPostPreview = document.getElementById('div-post-preview');
       let textBuffer = '';
 
       function enableEditor() {
@@ -192,11 +195,14 @@
       function createEditor(div) {
         div.dataset["tinyEditor"] = "";
         window.__tinyEditor.transformToEditor(div);
+        div.classList.add('write-tiny-editor');
 
         document.querySelectorAll('[data-tiny-editor]')
           .forEach((editor) => {
             editor.addEventListener('input', (e) => {
-              textBuffer = e.target.innerHTML;
+              const html = e.target.innerHTML;
+              textBuffer = html;
+              // divPostPreview.innerHTML = html;
             });
           });
       }
