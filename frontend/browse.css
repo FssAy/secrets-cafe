@@ -285,6 +285,15 @@
   flex-direction: column;
   justify-content: center;
 }
+.browse-main-info {
+  gap: var(--dl-space-space-halfunit);
+  width: 504px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+}
 .browse-icon {
   width: var(--dl-size-size-medium);
   height: var(--dl-size-size-medium);
@@ -328,11 +337,9 @@
   margin-top: var(--dl-space-space-unit);
 }
 .browse-post {
-  flex: 0 0 auto;
   width: 100%;
-  border: 2px dashed rgba(120, 120, 120, 0.4);
-  height: auto;
-  display: flex;
-  align-items: flex-start;
-  flex-direction: column;
+  /*border: 2px dashed rgba(120, 120, 120, 0.4);*/
+  border: 1px solid #e0e0e0;
+  padding: 10px;
+  background-color: aliceblue;
 }
