@@ -209,6 +209,21 @@
           return;
         }
 
+        switch (post.state) {
+          case 0:
+            alert("Post is still awaiting for approval.");
+            break;
+          case 1:
+            break;
+          case 2:
+          case 3:
+            alert("Post has been rejected.");
+            break;
+          default:
+            alert(`Invalid post state: ${post.state}`);
+            return;
+        }
+
         renderPost(post);
       }
 

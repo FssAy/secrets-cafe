@@ -1,6 +1,7 @@
 use http_body_util::BodyExt;
 use hyper::Method;
 use crate::database::Database;
+use crate::database::types::PostState;
 use crate::handler::api::error::ApiError;
 use super::*;
 
@@ -48,7 +49,12 @@ impl Post {
                     .ok_or_else(|| api_error!(InvalidHeader))?
                     .ok_or_else(|| api_error!(InvalidHeader))?;
 
-                let post_table = db.get_post(post_code).await?;
+                let mut post_table = db.get_post(post_code).await?;
+
+                // todo: on Rejected or ForDeletion state return error with reason for this state and mod's name.
+                if post_table.state != PostState::Approved {
+                    post_table.content = String::from("--REDACTED--");
+                }
 
                 Ok(Res::new(Full::new(Bytes::from(
                     serde_json::to_string(&post_table).unwrap()
