@@ -183,6 +183,7 @@
       defer=""
       src="https://unpkg.com/@teleporthq/teleport-custom-scripts"
     ></script>
+    <script type="text/javascript" src="libs/purify.js"></script>
     <script>
       const inputPostCode = document.getElementById('input-post-code');
       const divInfo = document.getElementById('div-info');
@@ -233,9 +234,16 @@
       function renderPost(post) {
         divInfo.classList.add('hidden');
         divPost.classList.remove('hidden');
+        divPost.innerHTML = sanitizeHTML(post.content);
+      }
 
-        // todo: add html parser that removes malicious html
-        divPost.innerHTML = post.content;
+      function sanitizeHTML(html) {
+        if (!DOMPurify.isSupported) {
+          return `<div align="center" style="background-color:#1e1f22;color:#f00"><h1>YOUR INTERNET BROWSER IS NOT SUPPORTED</h1></div>`;
+        }
+
+        // todo: check if it removes html that could be malicious
+        return DOMPurify.sanitize(html, {USE_PROFILES: {html: true}});
       }
     </script>
   </body>
