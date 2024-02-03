@@ -204,11 +204,29 @@
       function submit() {
         const confirmed = confirm("Are you sure you want to submit your text?");
         if (!confirmed) {
-          alert('Failed to confirm!');
           return;
         }
 
-        alert(`Confirmed with text with length: ${textBuffer.length}`);
+        // todo: add some loader to show user that the post is being submitted
+
+        fetch('/api/post', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'text/html',
+          },
+          body: textBuffer,
+        })
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Failed to upload the post!');
+            }
+          })
+          .then(() => {
+            alert('Post has been submitted!');
+          })
+          .catch(error => {
+            alert(error);
+          });
       }
     </script>
   </body>
