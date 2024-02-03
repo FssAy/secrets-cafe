@@ -1,3 +1,6 @@
+use serde::{Deserialize, Deserializer, Serialize, Serializer};
+use crate::database::types::U8Visitor;
+
 #[repr(u8)]
 #[derive(Copy, Clone, Debug, Default)]
 pub enum PostState {
@@ -21,5 +24,24 @@ impl From<u8> for PostState {
                 std::mem::transmute(value)
             }
         }
+    }
+}
+
+impl Serialize for PostState {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+        where
+            S: Serializer,
+    {
+        serializer.serialize_u8(*self as u8)
+    }
+}
+
+impl<'de> Deserialize<'de> for PostState {
+    fn deserialize<D>(deserializer: D) -> Result<PostState, D::Error>
+        where
+            D: Deserializer<'de>,
+    {
+        let inner = deserializer.deserialize_u8(U8Visitor)?;
+        Ok(PostState::from(inner))
     }
 }

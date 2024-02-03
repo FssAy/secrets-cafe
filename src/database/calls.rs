@@ -1,5 +1,5 @@
 use surrealdb::sql::{Id, Thing};
-use crate::database::types::{ModTier, SessionToken};
+use crate::database::types::{ModTier, PostTable, SessionToken};
 use crate::handler::api::error::{api_error, ApiError};
 use super::*;
 
@@ -13,6 +13,22 @@ impl Database {
             .ok_or_else(|| api_error!(DatabaseError))?;
 
         Ok(post_id.id.to_raw())
+    }
+
+    pub async fn get_post(&self, code: impl ToString) -> Result<PostTable, ApiError> {
+        let post_table_id = Thing {
+            tb: "post".into(),
+            id: Id::String(code.to_string())
+        };
+
+        let post_table = self
+            .query(surql::GET_POST)
+            .bind(("post_id", post_table_id))
+            .await?
+            .take::<Option<PostTable>>(0)?
+            .ok_or_else(|| api_error!(PostNotFound))?;
+
+        Ok(post_table)
     }
 
     pub async fn create_mod(

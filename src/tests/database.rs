@@ -8,9 +8,14 @@ async fn get_db() -> Database {
 }
 
 #[tokio::test]
-async fn create_post() {
+async fn post() {
     let db = get_db().await;
-    db.create_post("Super cool post!").await.expect("Call failed!");
+
+    let post_content = "Super cool post!";
+
+    let post_code = db.create_post(post_content).await.expect("Call failed!");
+    let post = db.get_post(post_code).await.expect("Failed to get the post table!");
+    assert_eq!(post.content, post_content, "Post content mismatch!");
 }
 
 #[tokio::test]

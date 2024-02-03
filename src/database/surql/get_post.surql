@@ -1,0 +1,1 @@
+SELECT content, at, state FROM post WHERE id=$post_id;

@@ -62,6 +62,13 @@ macro_rules! api_error {
             error: crate::handler::api::error::ApiErrorType::InvalidBody,
         }
     };
+
+    (PostNotFound) => {
+        crate::handler::api::error::ApiError {
+            code: 404,
+            error: crate::handler::api::error::ApiErrorType::PostNotFound,
+        }
+    };
 }
 
 use http_body_util::Full;
@@ -82,6 +89,7 @@ pub enum ApiErrorType {
     MethodNotSupported,
     NetworkError,
     InvalidBody,
+    PostNotFound,
 }
 
 #[derive(Serialize, Debug, Clone)]
