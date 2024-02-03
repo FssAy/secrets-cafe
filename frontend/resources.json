@@ -3,14 +3,22 @@
     "index.html",
     "browse.html",
     "rules.html",
-    "write.html"
+    "write.html",
+    "contribute.html",
+    "develop.html",
+    "discover.html",
+    "donate.html"
   ],
   "styles": [
     "index.css",
     "style.css",
     "browse.css",
     "rules.css",
-    "write.css"
+    "write.css",
+    "contribute.css",
+    "develop.css",
+    "discover.css",
+    "donate.css"
   ],
   "scripts": [
     "libs/tiny-editor.js",
