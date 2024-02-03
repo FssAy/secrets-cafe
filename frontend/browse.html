@@ -127,32 +127,36 @@
         </header>
         <div class="browse-body">
           <div class="browse-main">
-            <svg viewBox="0 0 1024 1024" class="browse-icon">
-              <path
-                d="M406 598q80 0 136-56t56-136-56-136-136-56-136 56-56 136 56 136 136 56zM662 598l212 212-64 64-212-212v-34l-12-12q-76 66-180 66-116 0-197-80t-81-196 81-197 197-81 196 81 80 197q0 42-20 95t-46 85l12 12h34z"
-              ></path>
-            </svg>
-            <h1 class="browse-text">
-              <span>Browse</span>
-              <br />
-            </h1>
-            <span class="browse-text3">
+            <div id="div-info">
+              <svg viewBox="0 0 1024 1024" class="browse-icon">
+                <path
+                        d="M406 598q80 0 136-56t56-136-56-136-136-56-136 56-56 136 56 136 136 56zM662 598l212 212-64 64-212-212v-34l-12-12q-76 66-180 66-116 0-197-80t-81-196 81-197 197-81 196 81 80 197q0 42-20 95t-46 85l12 12h34z"
+                ></path>
+              </svg>
+              <h1 class="browse-text">
+                <span>Browse</span>
+                <br />
+              </h1>
+              <span class="browse-text3">
               <span>Here you can read stories posted by other people.</span>
               <br />
               <span>Get a random one or insert its unique code.</span>
             </span>
+            </div>
+            <div id="div-post"></div>
             <div class="browse-actions">
               <div class="browse-search">
                 <input
+                  id="input-post-code"
                   type="text"
-                  placeholder="unique code"
+                  placeholder="post code"
                   class="browse-textinput input"
                 />
-                <button type="button" class="browse-button button">
+                <button type="button" class="browse-button button" onclick="loadPost(true)">
                   Submit
                 </button>
               </div>
-              <button type="button" class="browse-button1 button">
+              <button type="button" class="browse-button1 button" onclick="loadPost(false)">
                 Get Random
               </button>
             </div>
@@ -180,5 +184,57 @@
       defer=""
       src="https://unpkg.com/@teleporthq/teleport-custom-scripts"
     ></script>
+    <script>
+      const inputPostCode = document.getElementById('input-post-code');
+      const divInfo = document.getElementById('div-info');
+      const divPost = document.getElementById('div-post');
+
+      async function loadPost(isPostCode) {
+        let post = null;
+
+        try {
+          if (isPostCode) {
+            const postCode = inputPostCode.value;
+
+            if (!postCode || postCode.length > 32) {
+              throw new Error('Failed to get the post!');
+            }
+
+            post = await getPost(postCode);
+          } else {
+            post = await getPostRandom();
+          }
+        } catch (error) {
+          alert(error);
+        }
+
+        renderPost(post);
+      }
+
+      async function getPost(postCode) {
+        let response = await fetch('/api/post', {
+          method: 'GET',
+          headers: {
+            'post-code': postCode,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to get the post!');
+        }
+
+        return JSON.parse(await response.text());
+      }
+
+      async function getPostRandom() {
+        throw new Error('Not implemented yet!');
+      }
+
+      function renderPost(post) {
+        divInfo.classList.add('hidden');
+        // todo: add html parser that removes malicious html
+        divPost.innerHTML = post.content;
+      }
+    </script>
   </body>
 </html>

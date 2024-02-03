@@ -37,6 +37,23 @@ impl Post {
                     serde_json::to_string(&response).unwrap()
                 ))))
             }
+            &Method::GET => {
+                let db: Database = Database::get().await.unwrap();
+
+                let headers = req.headers();
+
+                let post_code = headers
+                    .get("post-code")
+                    .map(|value| value.to_str().ok())
+                    .ok_or_else(|| api_error!(InvalidHeader))?
+                    .ok_or_else(|| api_error!(InvalidHeader))?;
+
+                let post_table = db.get_post(post_code).await?;
+
+                Ok(Res::new(Full::new(Bytes::from(
+                    serde_json::to_string(&post_table).unwrap()
+                ))))
+            }
             _ => Err(api_error!(MethodNotSupported))
         }
     }
