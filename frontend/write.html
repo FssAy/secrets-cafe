@@ -216,13 +216,17 @@
           },
           body: textBuffer,
         })
-          .then(response => {
+          .then(async response => {
             if (!response.ok) {
               throw new Error('Failed to upload the post!');
             }
+
+            let res = JSON.parse(await response.text());
+            return res.code;
           })
-          .then(() => {
-            alert('Post has been submitted!');
+          .then(code => {
+            // todo: maybe redirect user to the post page?
+            alert(`Post has been submitted! Here is its secret code:\n${code}`);
           })
           .catch(error => {
             alert(error);

@@ -41,10 +41,35 @@ macro_rules! api_error {
             error: crate::handler::api::error::ApiErrorType::ModNotFound,
         }
     };
+
+    (MethodNotSupported) => {
+        crate::handler::api::error::ApiError {
+            code: 405,
+            error: crate::handler::api::error::ApiErrorType::MethodNotSupported,
+        }
+    };
+
+    (NetworkError) => {
+        crate::handler::api::error::ApiError {
+            code: 500,
+            error: crate::handler::api::error::ApiErrorType::NetworkError,
+        }
+    };
+
+    (InvalidBody) => {
+        crate::handler::api::error::ApiError {
+            code: 400,
+            error: crate::handler::api::error::ApiErrorType::InvalidBody,
+        }
+    };
 }
 
+use http_body_util::Full;
+use hyper::body::Bytes;
+use hyper::Response;
 pub(crate) use api_error;
 use crate::database::types::TokenError;
+use crate::handler::Res;
 
 #[derive(Serialize, Debug, Clone)]
 pub enum ApiErrorType {
@@ -54,6 +79,9 @@ pub enum ApiErrorType {
     InvalidPassword,
     InvalidSessionToken,
     ModNotFound,
+    MethodNotSupported,
+    NetworkError,
+    InvalidBody,
 }
 
 #[derive(Serialize, Debug, Clone)]
@@ -92,5 +120,15 @@ impl From<surrealdb::Error> for ApiError {
 impl From<TokenError> for ApiError {
     fn from(_: TokenError) -> Self {
         api_error!(InvalidSessionToken)
+    }
+}
+
+impl Into<Res> for ApiError {
+    fn into(self) -> Res {
+        let error = serde_json::to_string(&self).unwrap();
+        Response::builder()
+            .status(self.code)
+            .body(Full::new(Bytes::from(error)))
+            .unwrap()
     }
 }
