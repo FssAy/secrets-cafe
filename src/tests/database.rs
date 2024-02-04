@@ -1,3 +1,4 @@
+use super::*;
 use crate::database::Database;
 use crate::database::types::ModTier;
 
@@ -41,4 +42,19 @@ async fn moderator() {
     db.update_mod_password("mod1", "2137", "1234").await.expect("Failed to update mod password!");
     // todo: check here if previously created session will be valid (it will be for the 0.X releases)
     db.create_mod_session("mod1", "1234").await.expect("Failed to create mod session after password change!");
+}
+
+#[test]
+fn manage_posts() {
+    with_stack_size(async {
+        let db = get_db().await;
+
+        let mod_none = db.create_mod("none", "123", ModTier::None).await.expect("Failed to create a mod!");
+        let mod_verifier = db.create_mod("verifier", "123", ModTier::Verifier).await.expect("Failed to create a mod!");
+
+        let post_code = db.create_post("Simple Post!").await.expect("Failed to create a post!");
+
+        db.verify_post(mod_none, &post_code).await.expect_err("Mod with tier None verified a post!");
+        db.verify_post(mod_verifier, &post_code).await.expect("Mod with tier Verifier failed to verify a post!");
+    });
 }

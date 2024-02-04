@@ -76,6 +76,13 @@ macro_rules! api_error {
             error: crate::handler::api::error::ApiErrorType::InvalidHeader,
         }
     };
+
+    (MissingPermission) => {
+        crate::handler::api::error::ApiError {
+            code: 401,
+            error: crate::handler::api::error::ApiErrorType::MissingPermission,
+        }
+    };
 }
 
 use http_body_util::Full;
@@ -98,6 +105,7 @@ pub enum ApiErrorType {
     InvalidBody,
     PostNotFound,
     InvalidHeader,
+    MissingPermission,
 }
 
 #[derive(Serialize, Debug, Clone)]

@@ -5,6 +5,19 @@ USE DB main;
 
 BEGIN TRANSACTION;
 
+DEFINE TABLE position SCHEMAFULL;
+DEFINE FIELD val ON TABLE position TYPE int DEFAULT 0;
+
+LET $val = (SELECT val FROM ONLY position:current).val;
+IF $val = NONE THEN (
+    CREATE position:current SET val=0
+) END;
+
+DEFINE FUNCTION fn::inc_position() {
+    LET $val = (UPDATE position:current SET val += 1 RETURN val).val;
+    RETURN $val[0];
+};
+
 DEFINE TABLE post SCHEMAFULL;
 DEFINE FIELD content ON TABLE post TYPE string;
 DEFINE FIELD at ON TABLE post TYPE datetime VALUE time::now();
@@ -18,9 +31,11 @@ DEFINE INDEX i_mod_name ON TABLE mod FIELDS name UNIQUE;
 
 DEFINE TABLE verified;
 DEFINE FIELD at ON TABLE verified TYPE datetime VALUE time::now();
+DEFINE FIELD position ON TABLE verified TYPE int DEFAULT fn::inc_position();
+DEFINE INDEX i_verified_position ON TABLE verified FIELDS position UNIQUE;
 
 DEFINE TABLE rejected;
-DEFINE FIELD at ON TABLE verified TYPE datetime VALUE time::now();
-DEFINE FIELD reason ON TABLE verified TYPE string;
+DEFINE FIELD at ON TABLE rejected TYPE datetime VALUE time::now();
+DEFINE FIELD reason ON TABLE rejected TYPE string;
 
 COMMIT TRANSACTION;

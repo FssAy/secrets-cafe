@@ -1,5 +1,5 @@
 use surrealdb::sql::{Id, Thing};
-use crate::database::types::{ModTier, PostTable, SessionToken};
+use crate::database::types::{ModTier, PostState, PostTable, SessionToken};
 use crate::handler::api::error::{api_error, ApiError};
 use super::*;
 
@@ -156,5 +156,33 @@ impl Database {
             .await?;
 
         Ok(())
+    }
+
+    pub async fn verify_post(
+        &self,
+        mod_id: impl ToString,
+        post_id: impl ToString,
+    ) -> Result<i64, ApiError> {
+        let mod_table_id = Thing {
+            tb: "mod".into(),
+            id: Id::String(mod_id.to_string()),
+        };
+
+        let post_table_id = Thing {
+            tb: "post".into(),
+            id: Id::String(post_id.to_string()),
+        };
+
+        let position = self
+            .query(surql::RELATE_MOD_VERIFIED)
+            .bind(("mod_id", mod_table_id))
+            .bind(("post_id", post_table_id))
+            .bind(("verifier_tier", ModTier::Verifier as u8))
+            .bind(("verified_state", PostState::Approved))
+            .await?
+            .take::<Option<i64>>(0)?
+            .ok_or_else(|| api_error!(MissingPermission))?;
+
+        Ok(position)
     }
 }

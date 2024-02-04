@@ -18,4 +18,5 @@ surql! {
     update_mod_tier,
     update_mod_phash,
     get_post,
+    relate_mod_verified,
 }
