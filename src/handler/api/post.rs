@@ -1,7 +1,7 @@
 use http_body_util::BodyExt;
 use hyper::Method;
 use crate::database::Database;
-use crate::database::types::PostState;
+use crate::database::types::{PostState, SessionToken, TokenPack};
 use crate::handler::api::error::ApiError;
 use super::*;
 
@@ -59,6 +59,45 @@ impl Post {
                 Ok(Res::new(Full::new(Bytes::from(
                     serde_json::to_string(&post_table).unwrap()
                 ))))
+            }
+            &Method::PATCH => {
+                let headers = req.headers();
+
+                let session = headers
+                    .get("session")
+                    .map(|value| value.to_str().ok())
+                    .ok_or_else(|| api_error!(InvalidHeader))?
+                    .ok_or_else(|| api_error!(InvalidHeader))?;
+
+                let action = headers
+                    .get("action")
+                    .map(|value| value.to_str().ok())
+                    .ok_or_else(|| api_error!(InvalidHeader))?
+                    .ok_or_else(|| api_error!(InvalidHeader))?;
+
+                let post_id = headers
+                    .get("post_id")
+                    .map(|value| value.to_str().ok())
+                    .ok_or_else(|| api_error!(InvalidHeader))?
+                    .ok_or_else(|| api_error!(InvalidHeader))?;
+
+                let db: Database = Database::get().await.unwrap();
+
+                let token = SessionToken::verify(
+                    TokenPack::unpack(session.to_string())?
+                ).await?;
+
+                match action {
+                    "approve" => {
+                        db.verify_post(token.user_id, post_id).await?;
+                    }
+                    "reject" => {}
+                    "delete" => {}
+                    _ => return Err(api_error!(InvalidHeader)),
+                }
+
+                // todo: return some other data
+                Ok(Res::new(Full::new(Bytes::from("{}"))))
             }
             _ => Err(api_error!(MethodNotSupported))
         }
