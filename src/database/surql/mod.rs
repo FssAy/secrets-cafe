@@ -19,4 +19,5 @@ surql! {
     update_mod_phash,
     get_post,
     relate_mod_verified,
+    relate_mod_rejected,
 }

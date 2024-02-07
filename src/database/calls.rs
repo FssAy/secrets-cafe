@@ -185,4 +185,34 @@ impl Database {
 
         Ok(position)
     }
+
+    pub async fn reject_post(
+        &self,
+        mod_id: impl ToString,
+        post_id: impl ToString,
+        reason: impl AsRef<str>,
+    ) -> Result<(), ApiError> {
+        let mod_table_id = Thing {
+            tb: "mod".into(),
+            id: Id::String(mod_id.to_string()),
+        };
+
+        let post_table_id = Thing {
+            tb: "post".into(),
+            id: Id::String(post_id.to_string()),
+        };
+
+        let _ = self
+            .query(surql::RELATE_MOD_REJECTED)
+            .bind(("mod_id", mod_table_id))
+            .bind(("post_id", post_table_id))
+            .bind(("reason", reason.as_ref()))
+            .bind(("verifier_tier", ModTier::Verifier as u8))
+            .bind(("rejected_state", PostState::Rejected))
+            .await?
+            .take::<Option<bool>>(0)?
+            .ok_or_else(|| api_error!(MissingPermission))?;
+
+        Ok(())
+    }
 }

@@ -51,10 +51,14 @@ fn manage_posts() {
 
         let mod_none = db.create_mod("none", "123", ModTier::None).await.expect("Failed to create a mod!");
         let mod_verifier = db.create_mod("verifier", "123", ModTier::Verifier).await.expect("Failed to create a mod!");
+        let mut post_code: String;
 
-        let post_code = db.create_post("Simple Post!").await.expect("Failed to create a post!");
+        post_code = db.create_post("Simple Post!").await.expect("Failed to create a post!");
+        db.verify_post(&mod_none, &post_code).await.expect_err("Mod with tier None verified a post!");
+        db.verify_post(&mod_verifier, &post_code).await.expect("Mod with tier Verifier failed to verify a post!");
 
-        db.verify_post(mod_none, &post_code).await.expect_err("Mod with tier None verified a post!");
-        db.verify_post(mod_verifier, &post_code).await.expect("Mod with tier Verifier failed to verify a post!");
+        post_code = db.create_post("Malicious Post!").await.expect("Failed to create a post!");
+        db.reject_post(&mod_none, &post_code, "Post is malicious.").await.expect_err("Mod with tier None rejected a post!");
+        db.reject_post(&mod_verifier, &post_code, "Post is malicious.").await.expect("Mod with tier Verifier failed to reject a post!");
     });
 }
