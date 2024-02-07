@@ -18,6 +18,8 @@ surql! {
     update_mod_tier,
     update_mod_phash,
     get_post,
+    get_post_random,
+    get_position_current,
     relate_mod_verified,
     relate_mod_rejected,
 }

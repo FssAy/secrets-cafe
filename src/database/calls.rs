@@ -1,3 +1,4 @@
+use rand::Rng;
 use surrealdb::sql::{Id, Thing};
 use crate::database::types::{ModTier, PostState, PostTable, SessionToken};
 use crate::handler::api::error::{api_error, ApiError};
@@ -24,6 +25,31 @@ impl Database {
         let post_table = self
             .query(surql::GET_POST)
             .bind(("post_id", post_table_id))
+            .await?
+            .take::<Option<PostTable>>(0)?
+            .ok_or_else(|| api_error!(PostNotFound))?;
+
+        Ok(post_table)
+    }
+
+    pub async fn get_post_random(&self) -> Result<PostTable, ApiError> {
+        let position_current = self
+            .query(surql::GET_POSITION_CURRENT)
+            .await?
+            .take::<Option<i64>>((0, "val"))?
+            .ok_or_else(|| api_error!(DatabaseError))?;
+
+        let position = if position_current.is_negative() {
+            return Err(api_error!(NoPostsLeft));
+        } else if position_current == 0 {
+            0
+        } else {
+            rand::thread_rng().gen_range(0..position_current)
+        };
+
+        let post_table = self
+            .query(surql::GET_POST_RANDOM)
+            .bind(("position", position))
             .await?
             .take::<Option<PostTable>>(0)?
             .ok_or_else(|| api_error!(PostNotFound))?;

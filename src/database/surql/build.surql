@@ -13,7 +13,7 @@ DEFINE FIELD val ON TABLE position TYPE int DEFAULT 0;
 
 LET $val = (SELECT val FROM ONLY position:current).val;
 IF $val = NONE THEN (
-    CREATE position:current SET val=0
+    CREATE position:current SET val=-1
 ) END;
 
 DEFINE FUNCTION fn::inc_position() {

@@ -1,0 +1,1 @@
+SELECT val FROM position:current;

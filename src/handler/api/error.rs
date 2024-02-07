@@ -83,6 +83,13 @@ macro_rules! api_error {
             error: crate::handler::api::error::ApiErrorType::MissingPermission,
         }
     };
+
+    (NoPostsLeft) => {
+        crate::handler::api::error::ApiError {
+            code: 404,
+            error: crate::handler::api::error::ApiErrorType::NoPostsLeft,
+        }
+    };
 }
 
 use std::str::FromStr;
@@ -108,6 +115,7 @@ pub enum ApiErrorType {
     InvalidHeader,
     MissingPermission,
     DatabaseRejectedTheRequest,
+    NoPostsLeft,
 }
 
 #[derive(Serialize, Debug, Clone)]

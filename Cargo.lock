@@ -2809,6 +2809,7 @@ dependencies = [
  "lazy_static",
  "once_cell",
  "paste",
+ "rand",
  "serde",
  "serde_json",
  "sha2",

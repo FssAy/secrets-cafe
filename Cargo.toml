@@ -23,6 +23,7 @@ hmac = "0.12.1"
 base64 = "0.21"
 sha2 = "0.10.8"
 command-engine = { git = "https://github.com/VulcoLibs/command-engine" }
+rand = "0.8.5"
 
 [target.'cfg(windows)'.dependencies]
 ansi_term = "0.12.1"
