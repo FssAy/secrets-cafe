@@ -56,9 +56,11 @@ fn manage_posts() {
         post_code = db.create_post("Simple Post!").await.expect("Failed to create a post!");
         db.verify_post(&mod_none, &post_code).await.expect_err("Mod with tier None verified a post!");
         db.verify_post(&mod_verifier, &post_code).await.expect("Mod with tier Verifier failed to verify a post!");
+        db.verify_post(&mod_verifier, &post_code).await.expect_err("Verified post that has been already verified!");
 
         post_code = db.create_post("Malicious Post!").await.expect("Failed to create a post!");
         db.reject_post(&mod_none, &post_code, "Post is malicious.").await.expect_err("Mod with tier None rejected a post!");
         db.reject_post(&mod_verifier, &post_code, "Post is malicious.").await.expect("Mod with tier Verifier failed to reject a post!");
+        db.reject_post(&mod_verifier, &post_code, "Post is malicious.").await.expect_err("Rejected post that has been already rejected!");
     });
 }

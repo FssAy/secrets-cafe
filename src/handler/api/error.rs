@@ -85,9 +85,10 @@ macro_rules! api_error {
     };
 }
 
+use std::str::FromStr;
 use http_body_util::Full;
 use hyper::body::Bytes;
-use hyper::Response;
+use hyper::{Response, StatusCode};
 pub(crate) use api_error;
 use crate::database::types::TokenError;
 use crate::handler::Res;
@@ -106,6 +107,7 @@ pub enum ApiErrorType {
     PostNotFound,
     InvalidHeader,
     MissingPermission,
+    DatabaseRejectedTheRequest,
 }
 
 #[derive(Serialize, Debug, Clone)]
@@ -130,6 +132,19 @@ impl From<surrealdb::Error> for ApiError {
             surrealdb::Error::Db(err_db) => match err_db {
                 // todo: find out which variants should return different error
                 RecordExists{..} | IndexExists{..} => api_error!(AlreadyExists),
+                FieldValue { value, thing, .. } => {
+                    if thing.starts_with("error:") {
+                        if let Ok(status) = StatusCode::from_str(value.as_str()) {
+                            // todo: get the ApiErrorType from the error
+                            return ApiError {
+                                code: status.as_u16(),
+                                error: ApiErrorType::DatabaseRejectedTheRequest,
+                            };
+                        }
+                    }
+
+                    api_error!(DatabaseError)
+                }
                 _ => api_error!(DatabaseError),
             }
             surrealdb::Error::Api(err_db_api) => match err_db_api {

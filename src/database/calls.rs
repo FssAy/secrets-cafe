@@ -162,7 +162,7 @@ impl Database {
         &self,
         mod_id: impl ToString,
         post_id: impl ToString,
-    ) -> Result<i64, ApiError> {
+    ) -> Result<(), ApiError> {
         let mod_table_id = Thing {
             tb: "mod".into(),
             id: Id::String(mod_id.to_string()),
@@ -173,17 +173,17 @@ impl Database {
             id: Id::String(post_id.to_string()),
         };
 
-        let position = self
+        let _ = self
             .query(surql::RELATE_MOD_VERIFIED)
             .bind(("mod_id", mod_table_id))
             .bind(("post_id", post_table_id))
             .bind(("verifier_tier", ModTier::Verifier as u8))
             .bind(("verified_state", PostState::Approved))
+            .bind(("unverified_state", PostState::Awaiting))
             .await?
-            .take::<Option<i64>>(0)?
-            .ok_or_else(|| api_error!(MissingPermission))?;
+            .check()?;
 
-        Ok(position)
+        Ok(())
     }
 
     pub async fn reject_post(
@@ -209,9 +209,9 @@ impl Database {
             .bind(("reason", reason.as_ref()))
             .bind(("verifier_tier", ModTier::Verifier as u8))
             .bind(("rejected_state", PostState::Rejected))
+            .bind(("unverified_state", PostState::Awaiting))
             .await?
-            .take::<Option<bool>>(0)?
-            .ok_or_else(|| api_error!(MissingPermission))?;
+            .check()?;
 
         Ok(())
     }
