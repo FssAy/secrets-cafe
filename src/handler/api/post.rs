@@ -5,6 +5,8 @@ use crate::database::types::{PostState, SessionToken, TokenPack};
 use crate::handler::api::error::ApiError;
 use super::*;
 
+const DEFAULT_REJECTION_REASON: &str = "Not provided.";
+
 #[derive(Serialize)]
 struct PostResponse {
     code: String,
@@ -91,7 +93,16 @@ impl Post {
                     "approve" => {
                         db.verify_post(token.user_id, post_id).await?;
                     }
-                    "reject" => {}
+                    "reject" => {
+                        let reason = headers
+                            .get("reason")
+                            .map(|value|
+                                value.to_str().unwrap_or_else(|_| DEFAULT_REJECTION_REASON)
+                            )
+                            .unwrap_or_else(|| DEFAULT_REJECTION_REASON);
+
+                        db.reject_post(token.user_id, post_id, reason).await?;
+                    }
                     "delete" => {}
                     _ => return Err(api_error!(InvalidHeader)),
                 }
