@@ -47,11 +47,14 @@ impl Post {
 
                 let post_code = headers
                     .get("post-code")
-                    .map(|value| value.to_str().ok())
-                    .ok_or_else(|| api_error!(InvalidHeader))?
-                    .ok_or_else(|| api_error!(InvalidHeader))?;
+                    .map(|value| value.to_str().unwrap_or_default())
+                    .unwrap_or_default();
 
-                let mut post_table = db.get_post(post_code).await?;
+                let mut post_table = if post_code.is_empty() || post_code == "random" {
+                    db.get_post_random().await?
+                } else {
+                    db.get_post(post_code).await?
+                };
 
                 // todo: on Rejected or ForDeletion state return error with reason for this state and mod's name.
                 if post_table.state != PostState::Approved {
