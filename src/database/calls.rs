@@ -44,7 +44,7 @@ impl Database {
         } else if position_current == 0 {
             0
         } else {
-            rand::thread_rng().gen_range(0..position_current)
+            rand::thread_rng().gen_range(0..position_current+1)
         };
 
         let post_table = self
