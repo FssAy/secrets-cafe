@@ -45,6 +45,23 @@ impl Post {
 
                 let headers = req.headers();
 
+                // Get a post for verification
+                if let Some(session) = headers
+                    .get("session")
+                    .map(|value| value.to_str().map_err(|_| api_error!(InvalidHeader)))
+                {
+                    let session = session?;
+                    let _ = SessionToken::verify(
+                        TokenPack::unpack(session.to_string())?
+                    ).await?;
+
+                    let post_table_full = db.get_post_unverified().await?;
+
+                    return Ok(Res::new(Full::new(Bytes::from(
+                        serde_json::to_string(&post_table_full).unwrap()
+                    ))))
+                }
+
                 let post_code = headers
                     .get("post-code")
                     .map(|value| value.to_str().unwrap_or_default())
