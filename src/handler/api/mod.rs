@@ -3,6 +3,7 @@ mod ping;
 
 pub mod error;
 mod post;
+mod moderator;
 
 use std::collections::HashMap;
 use std::future::Future;
@@ -55,6 +56,7 @@ lazy_static! {
         #[cfg(debug_assertions)]
         map.insert("/ping", ping::Ping.into_obj());
         map.insert("/post", post::Post.into_obj());
+        map.insert("/mod", moderator::Moderator.into_obj());
 
         map
     };
