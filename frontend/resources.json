@@ -7,7 +7,8 @@
     "contribute.html",
     "develop.html",
     "discover.html",
-    "donate.html"
+    "donate.html",
+    "mod.html"
   ],
   "styles": [
     "index.css",
@@ -18,7 +19,8 @@
     "contribute.css",
     "develop.css",
     "discover.css",
-    "donate.css"
+    "donate.css",
+    "mod.css"
   ],
   "scripts": [
     "libs/tiny-editor.js",
