@@ -147,6 +147,7 @@
           </div>
           <div id="div-post-ver" class="mod-post-verification hidden">
             <div class="mod-post">
+              <div id="div-post" class="post-view hidden"></div>
               <div class="mod-actions">
                 <div class="mod-rejection">
                   <input
@@ -155,21 +156,19 @@
                     id="in-reason"
                     class="mod-textinput2 input"
                   />
-                  <button
-                    type="button"
-                    id="btn-reject"
-                    class="mod-button1 button"
-                  >
+                  <button type="button" id="btn-reject" class="mod-button1 button" onclick="postReject()">
                     Reject
                   </button>
                 </div>
-                <button
-                  type="button"
-                  id="btn-approve"
-                  class="mod-button2 button"
-                >
+                <button type="button" id="btn-approve" class="mod-button2 button" onclick="postApprove()">
                   Approve
                 </button>
+                <button type="button" id="btn-reload" class="mod-button3 button" onclick="postReload()">
+                  Reload
+                </button>
+                <div class="div-post-code">
+                  <a id="text-post-id"></a>
+                </div>
               </div>
             </div>
           </div>
@@ -221,15 +220,20 @@
       defer=""
       src="https://unpkg.com/@teleporthq/teleport-custom-scripts"
     ></script>
+    <script type="text/javascript" src="libs/purify.js"></script>
+    <script type="text/javascript" src="scripts/posts.js"></script>
     <script>
       const divLogin = document.getElementById('div-login');
       const divPostVer = document.getElementById('div-post-ver');
       const divAccountSettings = document.getElementById('div-account-settings');
       const divNav = document.getElementById('div-nav');
+      const divPost = document.getElementById('div-post');
 
       const inLogin = document.getElementById('in-login');
       const inPassword = document.getElementById('in-password');
+      const inReason = document.getElementById('in-reason');
       const selNav = document.getElementById('sel-nav');
+      const textPostID = document.getElementById('text-post-id');
 
       const sessionKey = 'session';
       const hidden = 'hidden';
@@ -293,8 +297,6 @@
         divPostVer.classList.remove(hidden);
         divNav.classList.remove(hidden);
         selNav.value = SelValPostVerification;
-
-        // todo: get post
       }
 
       function openAccountSettings() {
@@ -303,6 +305,90 @@
         divAccountSettings.classList.remove(hidden);
         divNav.classList.remove(hidden);
         selNav.value = SelValAccountSettings;
+      }
+
+      async function loadPostToVerify() {
+        let post = null;
+        let session = window.sessionStorage.getItem(sessionKey);
+
+        if (!session) {
+          alert('Not logged in!');
+          return;
+        }
+
+        try {
+          post = await getPost(null, session);
+        } catch (error) {
+          alert(error);
+          return;
+        }
+
+        if (post.state !== 0) {
+          alert('Got post that has been already verified.');
+          return;
+        }
+
+        console.log('Loaded post:', post);
+
+        const postID = post.id.id.String;
+        textPostID.innerText = postID;
+        window.currentPost = postID;
+
+        divPost.innerHTML = sanitizeHTML(post.content);
+        divPost.classList.remove('hidden');
+      }
+
+      function clearRenderedPost() {
+        textPostID.innerHTML = '';
+        divPost.innerHTML = '';
+        inReason.value = '';
+        window.currentPost = null;
+      }
+
+      async function postPatch(action, reason='') {
+        try {
+          let response = await fetch('/api/post', {
+            method: 'PATCH',
+            headers: {
+              session: window.sessionStorage.getItem(sessionKey),
+              action: action,
+              post_id: window.currentPost,
+              reason: reason,
+            },
+          });
+
+          if (!response.ok) {
+            throw new Error('Failed to patch the post!');
+          }
+
+          return true;
+        } catch (e) {
+          alert(e);
+          return false;
+        }
+      }
+
+      async function postReject() {
+        const confirmed = confirm("Are you sure you want to REJECT this post?");
+        if (confirmed) {
+          if (await postPatch('reject', inReason.value)) {
+            clearRenderedPost();
+          }
+        }
+      }
+
+      async function postApprove() {
+        const confirmed = confirm("Are you sure you want to APPROVE this post?");
+        if (confirmed) {
+          if (await postPatch('approve')) {
+            clearRenderedPost();
+          }
+        }
+      }
+
+      async function postReload() {
+        clearRenderedPost();
+        await loadPostToVerify();
       }
     </script>
   </body>

@@ -290,7 +290,7 @@
   flex: 0 0 auto;
   width: 100%;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   flex-direction: column;
 }
 .mod-rejection {
@@ -314,6 +314,11 @@
 }
 .mod-button2 {
   color: var(--dl-color-success-700);
+  width: 100%;
+  margin-top: var(--dl-space-space-unit);
+}
+.mod-button3 {
+  color: var(--dl-color-primary-500);
   width: 100%;
   margin-top: var(--dl-space-space-unit);
 }
@@ -363,4 +368,8 @@
   border-radius: var(--dl-radius-radius-radius4);
   padding-right: var(--dl-space-space-halfunit);
   padding-bottom: var(--dl-space-space-halfunit);
+}
+.div-post-code {
+  color: var(--dl-color-gray-700);
+  margin-top: 16px;
 }
