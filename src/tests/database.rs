@@ -14,9 +14,13 @@ async fn post() {
 
     let post_content = "Super cool post!";
 
+    assert!(db.get_post_unverified().await.is_err());
+
     let post_code = db.create_post(post_content).await.expect("Call failed!");
     let post = db.get_post(post_code).await.expect("Failed to get the post table!");
     assert_eq!(post.content, post_content, "Post content mismatch!");
+
+    assert!(db.get_post_unverified().await.is_ok(), "Failed to get an unverified post even after creating one!");
 }
 
 #[tokio::test]

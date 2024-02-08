@@ -1,0 +1,1 @@
+SELECT * FROM post WHERE state=$unverified_state LIMIT 1;

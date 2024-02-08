@@ -1,6 +1,6 @@
 use rand::Rng;
 use surrealdb::sql::{Id, Thing};
-use crate::database::types::{ModTier, PostState, PostTable, SessionToken};
+use crate::database::types::{ModTier, PostState, PostTable, PostTableFull, SessionToken};
 use crate::handler::api::error::{api_error, ApiError};
 use super::*;
 
@@ -55,6 +55,14 @@ impl Database {
             .ok_or_else(|| api_error!(PostNotFound))?;
 
         Ok(post_table)
+    }
+
+    pub async fn get_post_unverified(&self) -> Result<PostTableFull, ApiError> {
+        self.query(surql::GET_POST_UNVERIFIED)
+            .bind(("unverified_state", PostState::Awaiting))
+            .await?
+            .take::<Option<PostTableFull>>(0)?
+            .ok_or_else(|| api_error!(NoPostsLeft))
     }
 
     pub async fn create_mod(
