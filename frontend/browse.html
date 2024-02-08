@@ -184,6 +184,7 @@
       src="https://unpkg.com/@teleporthq/teleport-custom-scripts"
     ></script>
     <script type="text/javascript" src="libs/purify.js"></script>
+    <script type="text/javascript" src="scripts/posts.js"></script>
     <script>
       const inputPostCode = document.getElementById('input-post-code');
       const divInfo = document.getElementById('div-info');
@@ -227,37 +228,10 @@
         renderPost(post);
       }
 
-      async function getPost(postCode=null) {
-        let headers = {};
-        if (postCode) {
-          headers['post-code'] = postCode;
-        }
-
-        let response = await fetch('/api/post', {
-          method: 'GET',
-          headers: headers,
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to get the post!');
-        }
-
-        return JSON.parse(await response.text());
-      }
-
       function renderPost(post) {
         divInfo.classList.add('hidden');
         divPost.classList.remove('hidden');
         divPost.innerHTML = sanitizeHTML(post.content);
-      }
-
-      function sanitizeHTML(html) {
-        if (!DOMPurify.isSupported) {
-          return `<div align="center" style="background-color:#1e1f22;color:#f00"><h1>YOUR INTERNET BROWSER IS NOT SUPPORTED</h1></div>`;
-        }
-
-        // todo: check if it removes html that could be malicious
-        return DOMPurify.sanitize(html, {USE_PROFILES: {html: true}});
       }
     </script>
   </body>

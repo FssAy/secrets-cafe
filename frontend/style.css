@@ -96,3 +96,10 @@
   text-transform: none;
   text-decoration: none;
 }
+.post-view {
+  width: 100%;
+  /*border: 2px dashed rgba(120, 120, 120, 0.4);*/
+  border: 1px solid #e0e0e0;
+  padding: 10px;
+  background-color: aliceblue;
+}

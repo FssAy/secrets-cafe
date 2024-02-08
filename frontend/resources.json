@@ -24,7 +24,8 @@
   ],
   "scripts": [
     "libs/tiny-editor.js",
-    "libs/purify.js"
+    "libs/purify.js",
+    "scripts/posts.js"
   ],
   "other": []
 }
