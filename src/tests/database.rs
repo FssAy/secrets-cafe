@@ -1,6 +1,6 @@
 use super::*;
 use crate::database::Database;
-use crate::database::types::ModTier;
+use crate::database::types::{ModTier, SessionToken, TokenPack};
 
 async fn get_db() -> Database {
     Database::get()
@@ -30,7 +30,10 @@ async fn moderator() {
         "Created a second mod with the same name!",
     );
 
-    db.create_mod_session("mod1", "2137").await.expect("Failed to create mod session!");
+    let session = db.create_mod_session("mod1", "2137").await.expect("Failed to create mod session!");
+    SessionToken::verify(
+        TokenPack::unpack(session).expect("Failed to unpack the session!")
+    ).await.expect("Failed to verify the session token!");
 
     db.update_mod_tier("mod1", ModTier::Verifier).await.expect("Failed to update mod tier!");
     assert!(

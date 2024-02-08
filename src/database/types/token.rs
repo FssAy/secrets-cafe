@@ -19,6 +19,7 @@ pub enum TokenError {
     InvalidSignature,
     ExpiredToken,
     InvalidTokenStructure,
+    InvalidTokenEncoding,
 }
 
 #[derive(Debug, Clone, Eq, PartialEq)]
@@ -139,9 +140,11 @@ impl TokenPack {
             .split_once(PACK_TOKEN_SEPARATOR)
             .ok_or_else(|| TokenError::InvalidTokenStructure)?;
 
+        let b64 = base64::engine::general_purpose::STANDARD;
+
         Ok(Self {
-            token: token.to_string().into_bytes(),
-            sign: sign.to_string().into_bytes(),
+            token: b64.decode(token).map_err(|_| TokenError::InvalidTokenEncoding)?,
+            sign: b64.decode(sign).map_err(|_| TokenError::InvalidTokenEncoding)?,
         })
     }
 }
