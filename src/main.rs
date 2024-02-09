@@ -11,6 +11,7 @@ mod tests;
 mod tls;
 
 mod logs;
+mod config;
 mod handler;
 mod database;
 mod console;
@@ -21,21 +22,21 @@ use hyper_util::rt::TokioIo;
 use tokio::net::TcpListener;
 use database::Database;
 use console::Console;
+use config::Config;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     logs::init();
+    let cfg = Config::init().await?;
     Database::get().await?;
-
-    let server_addr = SocketAddr::from(([127, 0, 0, 1], 3000));
 
     // on the debug mode it might be more performant to skip initializing the Resources as they are not used every time.
     #[cfg(not(debug_assertions))] {
         handler::reload_resource_map().await;
     }
 
-    let listener = TcpListener::bind(&server_addr).await?;
-    info!("Running the HTTP server on: {}", server_addr);
+    let listener = TcpListener::bind(&cfg.bind_address).await?;
+    info!("Running the HTTP server on: {}", cfg.bind_address);
 
     #[cfg(feature = "tls")]
     let acceptor = tls::init().expect("Failed to initialize the TLS!");
