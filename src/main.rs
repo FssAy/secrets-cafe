@@ -7,13 +7,15 @@ extern crate serde;
 #[cfg(test)]
 mod tests;
 
+#[cfg(feature = "tls")]
+mod tls;
+
 mod logs;
 mod handler;
 mod database;
 mod console;
 
 use std::net::SocketAddr;
-use hyper::server::conn::http1;
 use hyper::service::service_fn;
 use hyper_util::rt::TokioIo;
 use tokio::net::TcpListener;
@@ -35,7 +37,15 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let listener = TcpListener::bind(&server_addr).await?;
     info!("Running the HTTP server on: {}", server_addr);
 
+    #[cfg(feature = "tls")]
+    let acceptor = tls::init().expect("Failed to initialize the TLS!");
+
+    #[cfg(not(feature = "tls"))]
+    warn!("TLS is disabled!");
+
     Console::new().await?.start();
+
+    let service = service_fn(handler::service);
 
     // Main program loop.
     // todo: add graceful shutdown
@@ -43,16 +53,48 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         let (stream, addr) = listener.accept().await?;
         debug!("[{}] new connection", addr);
 
-        // todo: add TLS support
-        let io = TokioIo::new(stream);
+        #[cfg(not(feature = "tls"))] {
+            use hyper::server::conn::http1;
 
-        tokio::task::spawn(async move {
-            if let Err(err) = http1::Builder::new()
-                .serve_connection(io, service_fn(handler::service))
-                .await
-            {
-                error!("Error serving connection: {:?}", err);
-            }
-        });
+            let io = TokioIo::new(stream);
+
+            tokio::task::spawn(async move {
+                if let Err(err) = http1::Builder::new()
+                    .serve_connection(io, service)
+                    .await
+                {
+                    error!("Error serving connection: {:?}", err);
+                }
+            });
+        }
+
+        #[cfg(feature = "tls")] {
+            use hyper_util::server::conn::auto::Builder;
+            use hyper_util::rt::TokioExecutor;
+
+            let acceptor = acceptor.clone();
+
+            tokio::spawn(async move {
+                let tls_stream = match acceptor.accept(stream).await {
+                    Ok(tls_stream) => tls_stream,
+                    Err(err) => {
+                        #[cfg(debug_assertions)]
+                        error!("Failed to perform a TLS handshake: {:#?}", err);
+
+                        // to disable warning on release build
+                        drop(err);
+
+                        return;
+                    }
+                };
+
+                if let Err(err) = Builder::new(TokioExecutor::new())
+                    .serve_connection(TokioIo::new(tls_stream), service)
+                    .await
+                {
+                    error!("Error serving connection: {:#?}", err);
+                }
+            });
+        }
     }
 }
