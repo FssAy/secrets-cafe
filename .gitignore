@@ -2,5 +2,9 @@
 /target
 /secrets-cafe.db
 
+# Secret files
+/src/secrets/*
+!/src/secrets/README.md
+
 # IDE settings
 /.idea
