@@ -13,6 +13,10 @@ pub type Res = Response<Full<Bytes>>;
 
 const HTML_FILE_EXTENSION: &str = ".html";
 
+/// Main HTTP service. Each request made to the server lands here.
+///
+/// # Errors
+/// This function should always return a Response in an `Ok` variant!
 pub async fn service(req: Req) -> Result<Res, Infallible> {
     let req_path = req.uri().path().to_owned();
     let mut path = req_path.as_str();
@@ -24,6 +28,7 @@ pub async fn service(req: Req) -> Result<Res, Infallible> {
 
     let mut res: Res;
 
+    // API based requests
     if path.starts_with("/api/") {
         let api_path = path.split_once("/api").unwrap().1;
         res = api::handle_api_endpoint(api_path, req).await;
@@ -36,6 +41,8 @@ pub async fn service(req: Req) -> Result<Res, Infallible> {
         return Ok(res);
     }
 
+    // Resource based requests
     res = resources::handle_resource_endpoint(path, req).await;
+
     Ok(res)
 }

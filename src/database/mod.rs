@@ -70,7 +70,7 @@ impl Database {
         Self::init().await
     }
 
-    /// Builds the database by calling the `build` query.
+    /// Builds the database by executing the `build` query.
     async fn build(&self) -> anyhow::Result<()> {
         self.query(surql::BUILD).await?.check()?;
         Ok(())

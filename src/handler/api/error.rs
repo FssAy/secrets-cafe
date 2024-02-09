@@ -1,4 +1,4 @@
-/// This macro is the easiest way to create api errors.
+/// This macro is the easiest way to create api errors with a specific status code without a derive macro.
 macro_rules! api_error {
     (InvalidEndpoint) => {
         crate::handler::api::error::ApiError {
@@ -163,7 +163,8 @@ impl From<surrealdb::Error> for ApiError {
     }
 }
 
-// should be used only for reading the token
+// Should be used only for reading the token.
+// Creating the token should never really fail, so returning InvalidSessionToken is not ideal.
 impl From<TokenError> for ApiError {
     fn from(_: TokenError) -> Self {
         api_error!(InvalidSessionToken)

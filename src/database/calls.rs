@@ -88,7 +88,7 @@ impl Database {
         Ok(mod_id.id.to_raw())
     }
 
-    // I don't feel like the session tokens are secure enough, there might be a need to improve them later.
+    // The session tokens are not secure enough, there might be a need to improve them later.
     pub async fn create_mod_session(
         &self,
         name: impl AsRef<str>,

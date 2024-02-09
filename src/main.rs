@@ -27,6 +27,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
 
     let server_addr = SocketAddr::from(([127, 0, 0, 1], 3000));
 
+    // on the debug mode it might be more performant to skip initializing the Resources as they are not used every time.
     #[cfg(not(debug_assertions))] {
         handler::reload_resource_map().await;
     }
@@ -36,10 +37,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
 
     Console::new().await?.start();
 
+    // Main program loop.
+    // todo: add graceful shutdown
     loop {
         let (stream, addr) = listener.accept().await?;
         debug!("[{}] new connection", addr);
 
+        // todo: add TLS support
         let io = TokioIo::new(stream);
 
         tokio::task::spawn(async move {
