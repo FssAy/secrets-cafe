@@ -4,12 +4,16 @@ mod ping;
 pub mod error;
 mod post;
 mod moderator;
+mod responses;
+
+pub use responses::AsRes;
 
 use std::collections::HashMap;
 use std::future::Future;
 use std::pin::Pin;
 use std::task::{Context, Poll};
 use lazy_static::lazy_static;
+use responses::*;
 use crate::handler::api::error::api_error;
 use super::*;
 

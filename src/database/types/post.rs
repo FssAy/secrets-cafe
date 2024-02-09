@@ -1,4 +1,5 @@
 use surrealdb::sql::{Datetime, Thing};
+use crate::handler::api::AsRes;
 use super::*;
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -15,3 +16,6 @@ pub struct PostTableFull {
     pub at: Datetime,
     pub state: PostState,
 }
+
+impl AsRes for PostTable {}
+impl AsRes for PostTableFull {}

@@ -1,11 +1,5 @@
 use super::*;
 
-#[derive(Serialize)]
-struct PingResponse {
-    method: String,
-    msg: &'static str,
-}
-
 pub struct Ping;
 
 impl API for Ping {
@@ -16,9 +10,7 @@ impl API for Ping {
                 msg: "pong",
             };
 
-            Res::new(Full::new(Bytes::from(
-                serde_json::to_string(&response).unwrap()
-            )))
+            response.as_res()
         };
 
         ResFuture {

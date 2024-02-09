@@ -7,11 +7,6 @@ use super::*;
 
 const DEFAULT_REJECTION_REASON: &str = "Not provided.";
 
-#[derive(Serialize)]
-struct PostResponse {
-    code: String,
-}
-
 pub struct Post;
 
 impl Post {
@@ -32,13 +27,9 @@ impl Post {
                 let body_parsed = String::from_utf8(body_bytes.to_vec())
                     .map_err(|_| api_error!(InvalidBody))?;
 
-                let response = PostResponse {
+                Ok(PostResponse {
                     code: db.create_post(body_parsed).await?
-                };
-
-                Ok(Res::new(Full::new(Bytes::from(
-                    serde_json::to_string(&response).unwrap()
-                ))))
+                }.as_res())
             }
             &Method::GET => {
                 let db: Database = Database::get().await.unwrap();
@@ -57,9 +48,7 @@ impl Post {
 
                     let post_table_full = db.get_post_unverified().await?;
 
-                    return Ok(Res::new(Full::new(Bytes::from(
-                        serde_json::to_string(&post_table_full).unwrap()
-                    ))))
+                    return Ok(post_table_full.as_res())
                 }
 
                 let post_code = headers
@@ -78,9 +67,7 @@ impl Post {
                     post_table.content = String::from("--REDACTED--");
                 }
 
-                Ok(Res::new(Full::new(Bytes::from(
-                    serde_json::to_string(&post_table).unwrap()
-                ))))
+                Ok(post_table.as_res())
             }
             &Method::PATCH => {
                 let headers = req.headers();
@@ -127,8 +114,7 @@ impl Post {
                     _ => return Err(api_error!(InvalidHeader)),
                 }
 
-                // todo: return some other data
-                Ok(Res::new(Full::new(Bytes::from("{}"))))
+                Ok(SingleResponse::Ok.as_res())
             }
             _ => Err(api_error!(MethodNotSupported))
         }
