@@ -7,7 +7,6 @@ use tokio::io::{AsyncWriteExt, AsyncReadExt, BufReader, BufWriter};
 const TOKEN_LIFETIME_S: i64 = 3600;
 const PACK_TOKEN_SEPARATOR: char = '.';
 
-// todo: Generate random key on compilation
 // With public HMAC key anyone can have access to mod accounts!
 static HMAC_KEY: &[u8] = include_bytes!("../../secrets/token-hmac-key.bin");
 
