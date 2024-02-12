@@ -35,8 +35,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         handler::reload_resource_map().await;
     }
 
-    let listener = TcpListener::bind(&cfg.bind_address).await?;
-    info!("Running the HTTP server on: {}", cfg.bind_address);
+    let listener = TcpListener::bind(&cfg.server_address).await?;
+    info!("Running the HTTP server on: {}", cfg.server_address);
 
     #[cfg(feature = "tls")]
     let acceptor = tls::init().expect("Failed to initialize the TLS!");

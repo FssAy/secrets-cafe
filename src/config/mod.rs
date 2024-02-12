@@ -10,13 +10,13 @@ static CONFIG: OnceCell<Config> = OnceCell::new();
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Config {
-    pub bind_address: SocketAddr,
+    pub server_address: SocketAddr,
 }
 
 impl Default for Config {
     fn default() -> Self {
         Self {
-            bind_address: SocketAddr::from(([127, 0, 0, 1], 3000)),
+            server_address: SocketAddr::from(([127, 0, 0, 1], 3000)),
         }
     }
 }
