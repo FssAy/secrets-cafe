@@ -21,7 +21,8 @@
     "discover.css",
     "donate.css",
     "mod.css",
-    "fonts/inter/inter.css"
+    "fonts/inter/inter.css",
+    "third-party-styles/fontawesome.css"
   ],
   "scripts": [
     "libs/tiny-editor.js",
@@ -35,6 +36,7 @@
     "fonts/inter/UcC73FwrK3iLTeHuS_fvQtMwCp50KnMa2JL7SUc.woff2",
     "fonts/inter/UcC73FwrK3iLTeHuS_fvQtMwCp50KnMa2pL7SUc.woff2",
     "fonts/inter/UcC73FwrK3iLTeHuS_fvQtMwCp50KnMa2ZL7SUc.woff2",
-    "fonts/inter/UcC73FwrK3iLTeHuS_fvQtMwCp50KnMa25L7SUc.woff2"
+    "fonts/inter/UcC73FwrK3iLTeHuS_fvQtMwCp50KnMa25L7SUc.woff2",
+    "webfonts/fa-solid-900.woff2"
   ]
 }
