@@ -54,7 +54,7 @@ impl ResourceSettings {
             );
 
             let resource = ResourceEndpoint {
-                blob: vec![],
+                blob: Self::read_frontend_file(&path).await,
                 mime: HeaderValue::from_str(mime).unwrap(),
             };
 
