@@ -24,6 +24,9 @@ use database::Database;
 use console::Console;
 use config::Config;
 
+#[cfg(feature = "tls")]
+use tls::*;
+
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     logs::init();
@@ -38,8 +41,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let listener = TcpListener::bind(&cfg.server_address).await?;
     info!("Running the HTTP server on: {}", cfg.server_address);
 
-    #[cfg(feature = "tls")]
-    let acceptor = tls::init().expect("Failed to initialize the TLS!");
+    #[cfg(feature = "cloudflare")]
+    let acceptor_cf = cloudflare::TlsAcceptorCF::init()
+        .expect("Failed to initialize the Cloudflare TLS!");
 
     #[cfg(not(feature = "tls"))]
     warn!("TLS is disabled!");
@@ -54,7 +58,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         let (stream, addr) = listener.accept().await?;
         debug!("[{}] new connection", addr);
 
-        #[cfg(not(feature = "tls"))] {
+        #[cfg(not(feature = "cloudflare"))] {
             use hyper::server::conn::http1;
 
             let io = TokioIo::new(stream);
@@ -69,11 +73,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
             });
         }
 
-        #[cfg(feature = "tls")] {
+        #[cfg(feature = "cloudflare")] {
             use hyper_util::server::conn::auto::Builder;
             use hyper_util::rt::TokioExecutor;
 
-            let acceptor = acceptor.clone();
+            let acceptor = acceptor_cf.clone();
 
             tokio::spawn(async move {
                 let tls_stream = match acceptor.accept(stream).await {
