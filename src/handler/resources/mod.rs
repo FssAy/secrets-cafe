@@ -77,12 +77,16 @@ pub(crate) async fn reload_resource_map() {
 /// - `/img/image.png`
 ///
 /// ... etc
-pub async fn handle_resource_endpoint(resource_path: &str, _req: Req) -> Res {
+pub async fn handle_resource_endpoint(mut resource_path: &str, _req: Req) -> Res {
     let resources = if let Some(resources) = RESOURCES.get() {
         resources
     } else {
         init_resource_map().await
     };
+
+    if resource_path == "/index" {
+        resource_path = "/";
+    }
 
     if let Some(endpoint) = resources
         .read()
