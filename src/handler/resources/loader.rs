@@ -49,8 +49,8 @@ impl ResourceSettings {
         }
 
         for path in self.other {
-            let mime = file_name_to_mime(
-                path.file_name().unwrap().to_str().unwrap()
+            let mime = file_ext_to_mime(
+                path.extension().unwrap().to_str().unwrap()
             );
 
             let resource = ResourceEndpoint {
@@ -132,9 +132,8 @@ impl ResourceSettings {
 }
 
 // todo: add more MIME types
-// todo: refactor into using file extensions and not file names
 /// Returns a MIME type based on the file extension.
-fn file_name_to_mime(file_name: &str) -> &'static str {
+fn file_ext_to_mime(file_name: &str) -> &'static str {
     match file_name {
         _ => "application/octet-stream",
     }
