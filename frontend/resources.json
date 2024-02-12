@@ -20,12 +20,21 @@
     "develop.css",
     "discover.css",
     "donate.css",
-    "mod.css"
+    "mod.css",
+    "fonts/inter/inter.css"
   ],
   "scripts": [
     "libs/tiny-editor.js",
     "libs/purify.js",
     "scripts/posts.js"
   ],
-  "other": []
+  "other": [
+    "fonts/inter/UcC73FwrK3iLTeHuS_fvQtMwCp50KnMa0ZL7SUc.woff2",
+    "fonts/inter/UcC73FwrK3iLTeHuS_fvQtMwCp50KnMa1pL7SUc.woff2",
+    "fonts/inter/UcC73FwrK3iLTeHuS_fvQtMwCp50KnMa1ZL7.woff2",
+    "fonts/inter/UcC73FwrK3iLTeHuS_fvQtMwCp50KnMa2JL7SUc.woff2",
+    "fonts/inter/UcC73FwrK3iLTeHuS_fvQtMwCp50KnMa2pL7SUc.woff2",
+    "fonts/inter/UcC73FwrK3iLTeHuS_fvQtMwCp50KnMa2ZL7SUc.woff2",
+    "fonts/inter/UcC73FwrK3iLTeHuS_fvQtMwCp50KnMa25L7SUc.woff2"
+  ]
 }

@@ -135,6 +135,7 @@ impl ResourceSettings {
 /// Returns a MIME type based on the file extension.
 fn file_ext_to_mime(file_name: &str) -> &'static str {
     match file_name {
+        "woff2" => "font/woff2",
         _ => "application/octet-stream",
     }
 }
