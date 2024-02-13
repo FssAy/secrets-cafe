@@ -155,13 +155,18 @@ impl Database {
 
     pub async fn update_mod_password(
         &self,
-        name: impl AsRef<str>,
+        id: impl ToString,
         password: impl AsRef<str>,
         password_new: impl AsRef<str>,
     ) -> Result<(), ApiError> {
+        let mod_table_id = Thing {
+            tb: "mod".to_string(),
+            id: Id::String(id.to_string()),
+        };
+
         let mut response = self
-            .query(surql::GET_MOD_LOGIN_INFO)
-            .bind(("mod_name", name.as_ref()))
+            .query(surql::GET_MOD_PHASH)
+            .bind(("mod_id", &mod_table_id))
             .await?;
 
         let phash = response
@@ -174,9 +179,6 @@ impl Database {
         if !is_password_same {
             return Err(api_error!(InvalidPassword));
         }
-
-        let mod_table_id = response.take::<Option<Thing>>((0, "id"))?
-            .ok_or_else(|| api_error!(DatabaseError))?;
 
         let phash_new = bcrypt::hash(
             password_new.as_ref(),

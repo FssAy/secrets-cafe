@@ -59,7 +59,7 @@ async fn moderator() {
     db.update_mod_tier(format!("mod:{}", mod1_id), ModTier::Dev).await.expect("Failed to update mod tier!");
 
     // check account "security"
-    db.update_mod_password(mod_name, mod_password, mod_password_new).await.expect("Failed to update mod password!");
+    db.update_mod_password(&mod1_id, mod_password, mod_password_new).await.expect("Failed to update mod password!");
     // todo: check here if previously created session will be valid (it will be for the 0.X releases)
     db.create_mod_session(mod_name, mod_password_new).await.expect("Failed to create mod session after password change!");
 }

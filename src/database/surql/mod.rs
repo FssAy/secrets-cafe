@@ -15,6 +15,7 @@ surql! {
     create_post,
     create_mod,
     get_mod_login_info,
+    get_mod_phash,
     update_mod_tier,
     update_mod_phash,
     get_post,
