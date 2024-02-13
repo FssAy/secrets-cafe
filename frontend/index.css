@@ -335,6 +335,14 @@
   margin-bottom: var(--dl-space-space-twounits);
   padding-right: var(--dl-space-space-oneandhalfunits);
 }
+.home-text-warning {
+  width: 760px;
+  text-align: center;
+  padding-left: var(--dl-space-space-oneandhalfunits);
+  margin-bottom: var(--dl-space-space-twounits);
+  padding-right: var(--dl-space-space-oneandhalfunits);
+  color: #db2f2f;
+}
 .home-actions {
   width: 538px;
   height: 100px;
