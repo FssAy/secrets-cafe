@@ -2,6 +2,12 @@
 name = "secrets-cafe"
 version = "0.1.0"
 edition = "2021"
+authors = ["FssAy"]
+description = "Website for sharing stories anonymously"
+homepage = "https://secrets.cafe"
+repository = "https://github.com/FssAy/secrets-cafe"
+license = "CC-BY-NC-4.0"
+publish = false
 
 [features]
 default = []
