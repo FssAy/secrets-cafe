@@ -5,7 +5,7 @@ Currently, this is not a finished product, it lacks many features and is filled 
 I am not a frontend developer, so the website lacks proper support for mobile devices and the JS scripts might have a lot of issues.
 
 ### Usage
-If you want to run **secrets.cafe** locally I would recommend building it in a release mode without any features.
+If you want to run **secrets.cafe** locally I would recommend building it in a release mode without any features. <br>
 `cargo run --release`
 
 Running in the debug mode might cause a crash when doing some database operations.
