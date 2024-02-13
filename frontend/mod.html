@@ -174,13 +174,7 @@
                 id="in-as-newpassword"
                 class="mod-textinput4 input"
               />
-              <button
-                type="button"
-                id="btn-as-changepass"
-                class="mod-button3 button"
-              >
-                Change
-              </button>
+              <button type="button" id="btn-as-changepass" class="mod-button3 button" onclick="changePassword()">Change</button>
             </div>
           </div>
         </div>
@@ -216,6 +210,8 @@
       const inLogin = document.getElementById('in-login');
       const inPassword = document.getElementById('in-password');
       const inReason = document.getElementById('in-reason');
+      const inASPassword = document.getElementById('in-as-password');
+      const inASNewPassword = document.getElementById('in-as-newpassword');
       const selNav = document.getElementById('sel-nav');
       const textPostID = document.getElementById('text-post-id');
 
@@ -373,6 +369,30 @@
       async function postReload() {
         clearRenderedPost();
         await loadPostToVerify();
+      }
+
+      async function changePassword() {
+        try {
+          let response = await fetch('/api/mod', {
+            method: 'PATCH',
+            headers: {
+              session: window.sessionStorage.getItem(sessionKey),
+              pass: inASPassword.value,
+              new_pass: inASNewPassword.value,
+            },
+          });
+
+          if (!response.ok) {
+            throw new Error('Failed to patch the post!');
+          }
+
+          return true;
+        } catch (e) {
+          alert(e);
+          return false;
+        } finally {
+          alert('Password has been changed.');
+        }
       }
     </script>
   </body>
