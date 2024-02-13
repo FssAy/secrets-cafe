@@ -261,6 +261,30 @@
   flex-direction: column;
   justify-content: center;
 }
+.develop-main {
+  gap: var(--dl-space-space-halfunit);
+  flex: 1;
+  width: 462px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+}
+.develop-icon {
+  width: var(--dl-size-size-medium);
+  height: var(--dl-size-size-medium);
+}
 .develop-text {
+  font-size: 3rem;
+}
+.develop-text1 {
   align-self: center;
+  font-style: normal;
+  text-align: center;
+  font-weight: 700;
+}
+.develop-button {
+  width: 100%;
+  margin-top: var(--dl-space-space-unit);
 }
