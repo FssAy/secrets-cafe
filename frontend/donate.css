@@ -261,6 +261,30 @@
   flex-direction: column;
   justify-content: center;
 }
+.donate-main {
+  gap: var(--dl-space-space-halfunit);
+  flex: 1;
+  width: 462px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+}
+.donate-icon {
+  width: var(--dl-size-size-medium);
+  height: var(--dl-size-size-medium);
+}
 .donate-text {
+  font-size: 3rem;
+}
+.donate-text1 {
   align-self: center;
+  font-style: normal;
+  text-align: center;
+  font-weight: 700;
+}
+.donate-button {
+  width: 100%;
+  margin-top: var(--dl-space-space-unit);
 }
