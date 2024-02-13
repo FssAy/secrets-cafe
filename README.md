@@ -17,9 +17,10 @@ It can be fixed by increasing the stack size with tokio runtime builder, but I d
 
 ### ToDo
 This is a list of things to do before 1.0 release
+- [ ] Test HTML sanitizer.
 - [ ] Improve security.
 - [ ] Rework frontend.
-- [ ] Rework resource loading.
+- [ ] Rework resource loading. _(?)_
 - [ ] Add rate limits. _(?)_
 - [ ] Add proper API documentation.
 
