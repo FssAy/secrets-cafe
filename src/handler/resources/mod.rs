@@ -28,45 +28,61 @@ struct ResourceEndpoint {
     pub mime: HeaderValue,
 }
 
-// todo: add error handling
 /// Initializes the `ResourceMap`.
 ///
+/// This might be dangerous if resources are not initialized at the start of the program and accessed at the same time.
+///
+/// # Errors
+/// Will return an error message if resources couldn't be loaded.
+///
 /// # Panics
-/// This function will panic if called for a second time or if there was an error while loading the resources.
-async fn init_resource_map() -> &'static RwLock<ResourceMap> {
+/// This function will panic if called for a second time.
+async fn init_resource_map() -> anyhow::Result<&'static RwLock<ResourceMap>> {
     let resource_map = loader::ResourceSettings::from_file()
-        .await
+        .await?
         .into_resource_map()
-        .await;
+        .await?;
 
     RESOURCES.set(RwLock::new(resource_map)).unwrap();
-    RESOURCES.get().unwrap()
+    Ok(RESOURCES.get().unwrap())
 }
 
-// todo: add error handling
 /// Reloads the resource map.
 ///
 /// This will load all the files from the disk and create a new `ResourceMap`.
 /// It's public to allow resource reload from other parts of the system like console or API.
 ///
-/// # Panics
-/// Will panic on any IO issue.
-pub(crate) async fn reload_resource_map() {
+/// # Errors
+/// Will return an error message when it couldn't load the resources.
+pub(crate) async fn reload_resource_map() -> anyhow::Result<()> {
     let resources = if let Some(resources) = RESOURCES.get() {
         resources
     } else {
-        init_resource_map().await;
-        return;
+        init_resource_map().await?;
+        return Ok(());
     };
 
     let resource_map = loader::ResourceSettings::from_file()
-        .await
+        .await?
         .into_resource_map()
-        .await;
+        .await?;
 
     let mut lock = resources.write().await;
     *lock = resource_map;
     drop(lock);
+
+    Ok(())
+}
+
+// todo: add proper 404 page
+/// Creates a new 404 page response.
+fn page_404() -> Res {
+    Response::builder()
+        .status(StatusCode::NOT_FOUND)
+        .body(Full::new(Bytes::from(
+            "Page not found!"
+        )))
+        .unwrap()
 }
 
 /// Handles each resource based request.
@@ -81,7 +97,11 @@ pub async fn handle_resource_endpoint(mut resource_path: &str, _req: Req) -> Res
     let resources = if let Some(resources) = RESOURCES.get() {
         resources
     } else {
-        init_resource_map().await
+        if let Ok(resources) = init_resource_map().await {
+            resources
+        } else {
+            return page_404();
+        }
     };
 
     if resource_path == "/index" {
@@ -100,12 +120,6 @@ pub async fn handle_resource_endpoint(mut resource_path: &str, _req: Req) -> Res
             )))
             .unwrap()
     } else {
-        // todo: add proper 404 page
-        Response::builder()
-            .status(StatusCode::NOT_FOUND)
-            .body(Full::new(Bytes::from(
-                "Page not found!"
-            )))
-            .unwrap()
+        page_404()
     }
 }

@@ -1,5 +1,3 @@
-// todo: refactor
-
 use super::*;
 use std::path::{Path, PathBuf};
 use hyper::header::HeaderValue;
@@ -23,29 +21,28 @@ pub struct ResourceSettings {
 }
 
 impl ResourceSettings {
-    // todo: error handling
     /// Loads the resource settings from the file.
-    pub async fn from_file() -> Self {
+    pub async fn from_file() -> anyhow::Result<Self> {
         let path = Path::new(RESOURCE_SETTINGS_FILE);
-        let file_contents = Self::read_frontend_file(path).await;
-        serde_json::from_slice::<Self>(&file_contents).unwrap()
+        let file_contents = Self::read_frontend_file(path).await?;
+        let settings = serde_json::from_slice::<Self>(&file_contents)?;
+        Ok(settings)
     }
 
-    // todo: error handling
     /// Reads through the settings and loads frontend files into the `ResourceMap`.
-    pub async fn into_resource_map(self) -> ResourceMap {
+    pub async fn into_resource_map(self) -> anyhow::Result<ResourceMap> {
         let mut map = ResourceMap::new();
 
         for page_path in self.pages {
-            Self::load_and_insert_resource(&mut map, page_path, "text/html").await;
+            Self::load_and_insert_resource(&mut map, page_path, "text/html").await?;
         }
 
         for style_path in self.styles {
-            Self::load_and_insert_resource(&mut map, style_path, "text/css").await;
+            Self::load_and_insert_resource(&mut map, style_path, "text/css").await?;
         }
 
         for script_path in self.scripts {
-            Self::load_and_insert_resource(&mut map, script_path, "text/javascript").await;
+            Self::load_and_insert_resource(&mut map, script_path, "text/javascript").await?;
         }
 
         for path in self.other {
@@ -54,7 +51,7 @@ impl ResourceSettings {
             );
 
             let resource = ResourceEndpoint {
-                blob: Self::read_frontend_file(&path).await,
+                blob: Self::read_frontend_file(&path).await?,
                 mime: HeaderValue::from_str(mime).unwrap(),
             };
 
@@ -70,16 +67,15 @@ impl ResourceSettings {
             }
         }
 
-        map
+        Ok(map)
     }
 
-    // todo: error handling
     /// Reads a specific frontend file and puts it inside the `ResourceMap`.
-    async fn load_and_insert_resource(map: &mut ResourceMap, path: impl AsRef<Path>, mime: &'static str) {
+    async fn load_and_insert_resource(map: &mut ResourceMap, path: impl AsRef<Path>, mime: &'static str) -> anyhow::Result<()> {
         let path = path.as_ref();
 
         let resource = ResourceEndpoint {
-            blob: Self::read_frontend_file(path).await,
+            blob: Self::read_frontend_file(path).await?,
             mime: HeaderValue::from_str(mime).unwrap(),
         };
 
@@ -87,11 +83,12 @@ impl ResourceSettings {
             Self::parse_file_path(path),
             resource,
         );
+
+        Ok(())
     }
 
-    // todo: error handling
     /// Reads a specific frontend file.
-    async fn read_frontend_file(path: impl AsRef<Path>) -> Vec<u8> {
+    async fn read_frontend_file(path: impl AsRef<Path>) -> anyhow::Result<Vec<u8>> {
         let path = Path::new(FRONTEND_FOLDER_PATH).join(path.as_ref());
         let mut buffer = Vec::new();
 
@@ -100,13 +97,11 @@ impl ResourceSettings {
         OpenOptions::new()
             .read(true)
             .open(path)
-            .await
-            .unwrap()
+            .await?
             .read_to_end(&mut buffer)
-            .await
-            .unwrap();
+            .await?;
 
-        buffer
+        Ok(buffer)
     }
 
     /// Converts the file path of a frontend file into a valid URI.

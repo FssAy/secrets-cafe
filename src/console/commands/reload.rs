@@ -18,8 +18,10 @@ impl Command for Reload {
 
         match arg_operation.as_str() {
             "frontend" => {
-                reload_resource_map().await;
-                Output::new_ok(0, Some("ok"))
+                match reload_resource_map().await {
+                    Ok(_) => Output::new_ok(0, Some("ok")),
+                    Err(err) => Output::new_error(3, Some(err)),
+                }
             }
             unknown => Output::new_error(2, Some(format!(
                 "unknown target argument ({})", unknown,
