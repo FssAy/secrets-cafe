@@ -316,6 +316,7 @@
 }
 .write-editor {
   flex: 0 0 auto;
+  width: 504px;
   height: auto;
   display: flex;
   align-items: flex-start;
