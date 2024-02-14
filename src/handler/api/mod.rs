@@ -23,6 +23,7 @@ use super::*;
 #[derive(Copy, Clone, Debug)]
 enum FeatureAPI {
     PostUpload,
+    ModLogin,
 }
 
 impl Feature for FeatureAPI {

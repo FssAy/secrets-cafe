@@ -1,4 +1,5 @@
 use hyper::Method;
+use limtr::Limtr;
 use crate::database::Database;
 use crate::database::types::{SessionToken, TokenPack};
 use crate::handler::api::error::ApiError;
@@ -7,9 +8,21 @@ use super::*;
 pub struct Moderator;
 
 impl Moderator {
-    async fn handler(req: Req) -> Result<Res, ApiError> {
+    async fn handler(req: Req, addr: SocketAddr) -> Result<Res, ApiError> {
         match req.method() {
             &Method::GET => {
+                let ratelimit = Limtr::update_limit(
+                    addr.ip(),
+                    FeatureAPI::ModLogin,
+                    300,  // 5 minute
+                    3,
+                ).await?;
+
+                if ratelimit != 0 {
+                    // todo: return the ratelimit value
+                    return Err(api_error!(TooManyRequests));
+                }
+
                 let headers = req.headers();
 
                 let login = headers
@@ -71,9 +84,9 @@ impl Moderator {
 }
 
 impl API for Moderator {
-    fn handle(&self, req: Req, _addr: SocketAddr) -> ResFuture {
+    fn handle(&self, req: Req, addr: SocketAddr) -> ResFuture {
         let fut = async move {
-            Self::handler(req).await.unwrap_or_else(|err| err.into())
+            Self::handler(req, addr).await.unwrap_or_else(|err| err.into())
         };
 
         ResFuture {
