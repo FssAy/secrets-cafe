@@ -2,6 +2,7 @@ pub mod api;
 mod resources;
 
 use std::convert::Infallible;
+use std::net::SocketAddr;
 use http_body_util::Full;
 use hyper::body::Bytes;
 use hyper::{Request, Response};
@@ -17,7 +18,7 @@ const HTML_FILE_EXTENSION: &str = ".html";
 ///
 /// # Errors
 /// This function should always return a Response in an `Ok` variant!
-pub async fn service(req: Req) -> Result<Res, Infallible> {
+pub async fn service(req: Req, addr: SocketAddr) -> Result<Res, Infallible> {
     let req_path = req.uri().path().to_owned();
     let mut path = req_path.as_str();
 
@@ -31,7 +32,7 @@ pub async fn service(req: Req) -> Result<Res, Infallible> {
     // API based requests
     if path.starts_with("/api/") {
         let api_path = path.split_once("/api").unwrap().1;
-        res = api::handle_api_endpoint(api_path, req).await;
+        res = api::handle_api_endpoint(api_path, req, addr).await;
 
         res.headers_mut().insert(
             hyper::header::CONTENT_TYPE,

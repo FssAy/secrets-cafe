@@ -10,6 +10,7 @@ pub use responses::AsRes;
 
 use std::collections::HashMap;
 use std::future::Future;
+use std::net::SocketAddr;
 use std::pin::Pin;
 use std::task::{Context, Poll};
 use lazy_static::lazy_static;
@@ -41,7 +42,7 @@ trait API where Self: 'static {
     ///
     /// The future is wrapped with `ResFuture` struct as
     /// when trying to return a raw future the compiler bitched around.
-    fn handle(&self, req: Req) -> ResFuture;
+    fn handle(&self, req: Req, addr: SocketAddr) -> ResFuture;
 
     /// Converts itself into trait object.
     fn into_obj(self) -> Box<dyn API + Sync> where Self: Sized, Self: Sync {
@@ -67,9 +68,9 @@ lazy_static! {
 }
 
 /// This function will call a specific API endpoint handler based on the given `api_path`.
-pub async fn handle_api_endpoint(api_path: &str, req: Req) -> Res {
+pub async fn handle_api_endpoint(api_path: &str, req: Req, addr: SocketAddr) -> Res {
     if let Some(api_endpoint) = API_ENDPOINTS.get(api_path) {
-        api_endpoint.handle(req).await
+        api_endpoint.handle(req, addr).await
     } else {
         debug!("Not Found");
         let err = api_error!(InvalidEndpoint);

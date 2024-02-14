@@ -50,8 +50,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
 
     Console::new().await?.start();
 
-    let service = service_fn(handler::service);
-
     // Main program loop.
     // todo: add graceful shutdown
     loop {
@@ -65,7 +63,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
 
             tokio::task::spawn(async move {
                 if let Err(err) = http1::Builder::new()
-                    .serve_connection(io, service)
+                    .serve_connection(io, service_fn(|req| async move {
+                        handler::service(req, addr).await
+                    }))
                     .await
                 {
                     error!("Error serving connection: {:?}", err);
@@ -94,7 +94,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
                 };
 
                 if let Err(err) = Builder::new(TokioExecutor::new())
-                    .serve_connection(TokioIo::new(tls_stream), service)
+                    .serve_connection(TokioIo::new(tls_stream), service_fn(|req| async move {
+                        handler::service(req, addr).await
+                    }))
                     .await
                 {
                     error!("Error serving connection: {:#?}", err);

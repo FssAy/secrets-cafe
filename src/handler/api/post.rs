@@ -122,7 +122,7 @@ impl Post {
 }
 
 impl API for Post {
-    fn handle(&self, req: Req) -> ResFuture {
+    fn handle(&self, req: Req, _addr: SocketAddr) -> ResFuture {
         let fut = async move {
             Self::handler(req).await.unwrap_or_else(|err| err.into())
         };

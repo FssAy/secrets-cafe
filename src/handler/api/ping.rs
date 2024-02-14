@@ -3,7 +3,7 @@ use super::*;
 pub struct Ping;
 
 impl API for Ping {
-    fn handle(&self, req: Req) -> ResFuture {
+    fn handle(&self, req: Req, _addr: SocketAddr) -> ResFuture {
         let fut = async move {
             let response = PingResponse {
                 method: req.method().to_string(),
