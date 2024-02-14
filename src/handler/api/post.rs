@@ -1,5 +1,6 @@
 use http_body_util::BodyExt;
 use hyper::Method;
+use limtr::Limtr;
 use crate::database::Database;
 use crate::database::types::{PostState, SessionToken, TokenPack};
 use crate::handler::api::error::ApiError;
@@ -10,9 +11,21 @@ const DEFAULT_REJECTION_REASON: &str = "Not provided.";
 pub struct Post;
 
 impl Post {
-    async fn handler(req: Req) -> Result<Res, ApiError> {
+    async fn handler(req: Req, addr: SocketAddr) -> Result<Res, ApiError> {
         match req.method() {
             &Method::POST => {
+                let ratelimit = Limtr::update_limit(
+                    addr.ip(),
+                    FeatureAPI::PostUpload,
+                    1800,  // 30 minutes
+                    2,
+                ).await?;
+
+                if ratelimit != 0 {
+                    // todo: return the ratelimit value
+                    return Err(api_error!(TooManyRequests));
+                }
+
                 let db: Database = Database::get().await.unwrap();
 
                 // todo: check body length
@@ -122,9 +135,9 @@ impl Post {
 }
 
 impl API for Post {
-    fn handle(&self, req: Req, _addr: SocketAddr) -> ResFuture {
+    fn handle(&self, req: Req, addr: SocketAddr) -> ResFuture {
         let fut = async move {
-            Self::handler(req).await.unwrap_or_else(|err| err.into())
+            Self::handler(req, addr).await.unwrap_or_else(|err| err.into())
         };
 
         ResFuture {

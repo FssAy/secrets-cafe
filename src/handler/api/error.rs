@@ -90,6 +90,20 @@ macro_rules! api_error {
             error: crate::handler::api::error::ApiErrorType::NoPostsLeft,
         }
     };
+
+    (RateLimitSystemFailed) => {
+        crate::handler::api::error::ApiError {
+            code: 500,
+            error: crate::handler::api::error::ApiErrorType::RateLimitSystemFailed,
+        }
+    };
+
+    (TooManyRequests) => {
+        crate::handler::api::error::ApiError {
+            code: 429,
+            error: crate::handler::api::error::ApiErrorType::TooManyRequests,
+        }
+    };
 }
 
 use std::str::FromStr;
@@ -116,6 +130,8 @@ pub enum ApiErrorType {
     MissingPermission,
     DatabaseRejectedTheRequest,
     NoPostsLeft,
+    RateLimitSystemFailed,
+    TooManyRequests,
 }
 
 #[derive(Serialize, Debug, Clone)]
@@ -170,6 +186,14 @@ impl From<TokenError> for ApiError {
         api_error!(InvalidSessionToken)
     }
 }
+
+impl From<limtr::Error> for ApiError {
+    fn from(_: limtr::Error) -> Self {
+        api_error!(InvalidSessionToken)
+    }
+
+}
+
 
 impl Into<Res> for ApiError {
     fn into(self) -> Res {

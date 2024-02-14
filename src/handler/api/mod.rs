@@ -15,8 +15,21 @@ use std::pin::Pin;
 use std::task::{Context, Poll};
 use lazy_static::lazy_static;
 use responses::*;
+use limtr::Feature;
 use crate::handler::api::error::api_error;
 use super::*;
+
+#[repr(u16)]
+#[derive(Copy, Clone, Debug)]
+enum FeatureAPI {
+    PostUpload,
+}
+
+impl Feature for FeatureAPI {
+    fn into_feature(self) -> u16 {
+        self as u16
+    }
+}
 
 /// Future wrapper for the request's Response.
 ///
