@@ -211,7 +211,8 @@
         })
           .then(async response => {
             if (!response.ok) {
-              throw new Error('Failed to upload the post!');
+              let res_err = JSON.parse(await response.text());
+              throw new Error(res_err.error);
             }
 
             let res = JSON.parse(await response.text());
