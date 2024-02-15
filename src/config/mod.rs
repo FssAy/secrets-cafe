@@ -11,12 +11,15 @@ static CONFIG: OnceCell<Config> = OnceCell::new();
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Config {
     pub server_address: SocketAddr,
+    /// Maximum size of the HTTP request body in bytes.
+    pub body_max_size: usize,
 }
 
 impl Default for Config {
     fn default() -> Self {
         Self {
             server_address: SocketAddr::from(([127, 0, 0, 1], 3000)),
+            body_max_size: 500_000,  // 0.5 MB
         }
     }
 }
@@ -65,8 +68,14 @@ impl Config {
         Ok(config)
     }
 
-    /// Used to fix minor config settings.
-    fn fix(&mut self) {}
+    /// Used to fix minor config issues.
+    fn fix(&mut self) {
+        #[cfg(not(debug_assertions))]
+        if self.body_max_size < 100_000 {
+            warn!("Fixed config value 'body_max_size' to the minimum value of '100000'.");
+            self.body_max_size = 100_000;
+        }
+    }
 
     /// Tries to initialize the config.
     ///

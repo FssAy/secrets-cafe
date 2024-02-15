@@ -1,6 +1,7 @@
 use http_body_util::BodyExt;
 use hyper::Method;
 use limtr::Limtr;
+use crate::config::Config;
 use crate::database::Database;
 use crate::database::types::{PostState, SessionToken, TokenPack};
 use crate::handler::api::error::ApiError;
@@ -14,6 +15,19 @@ impl Post {
     async fn handler(req: Req, addr: SocketAddr) -> Result<Res, ApiError> {
         match req.method() {
             &Method::POST => {
+                let body_max_size = Config::get().await.unwrap().body_max_size;
+                let mut body = Vec::new();
+                let mut body_stream = req.into_body();
+                while let Some(frame) = body_stream.frame().await {
+                    let frame = frame.map_err(|_| api_error!(InvalidBody))?;
+                    if let Ok(data) = frame.into_data() {
+                        if body.len() + data.len() > body_max_size {
+                            return Err(api_error!(InvalidBody));
+                        }
+                        body.extend(data.to_vec());
+                    }
+                }
+
                 let ratelimit = Limtr::update_limit(
                     addr.ip(),
                     FeatureAPI::PostUpload,
@@ -26,19 +40,10 @@ impl Post {
                     return Err(api_error!(TooManyRequests));
                 }
 
-                let db: Database = Database::get().await.unwrap();
-
-                // todo: check body length
-                // might be possible to crash the server with huge body request
-                let body_bytes = req
-                    .into_body()
-                    .collect()
-                    .await
-                    .map_err(|_| api_error!(NetworkError))?
-                    .to_bytes();
-
-                let body_parsed = String::from_utf8(body_bytes.to_vec())
+                let body_parsed = String::from_utf8(body)
                     .map_err(|_| api_error!(InvalidBody))?;
+
+                let db: Database = Database::get().await.unwrap();
 
                 Ok(PostResponse {
                     code: db.create_post(body_parsed).await?
