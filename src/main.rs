@@ -33,7 +33,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     logs::init();
     let cfg = Config::init().await?;
     Database::get().await?;
-    Limtr::init(32).await?;  // todo: switch to local Limtr and create a Context structure for the server
+    Limtr::init(32).await?;
 
     // on the debug mode it might be more performant to skip initializing the Resources as they are not used every time.
     #[cfg(not(debug_assertions))] {
