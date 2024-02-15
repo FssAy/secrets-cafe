@@ -21,7 +21,7 @@ This is a list of things to do before 1.0 release
 - [ ] Improve security.
 - [ ] Rework frontend.
 - [ ] Rework resource loading. _(?)_
-- [ ] Add rate limits. _(?)_
+- [x] Add rate limits.
 - [ ] Add proper API documentation.
 
 ---
