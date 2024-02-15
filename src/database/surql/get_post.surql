@@ -1,1 +1,1 @@
-SELECT content, at, state FROM post WHERE id=$post_id;
+SELECT id, content, at, state FROM post WHERE id=$post_id;

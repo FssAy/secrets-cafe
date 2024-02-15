@@ -3,7 +3,7 @@ use hyper::Method;
 use limtr::Limtr;
 use crate::config::Config;
 use crate::database::Database;
-use crate::database::types::{PostState, SessionToken, TokenPack};
+use crate::database::types::{PostState, PostTable, SessionToken, TokenPack};
 use crate::handler::api::error::ApiError;
 use super::*;
 
@@ -64,9 +64,11 @@ impl Post {
                         TokenPack::unpack(session.to_string())?
                     ).await?;
 
-                    let post_table_full = db.get_post_unverified().await?;
+                    let post_table: PostTable = db
+                        .get_post_unverified()
+                        .await?;
 
-                    return Ok(post_table_full.as_res())
+                    return Ok(post_table.as_res())
                 }
 
                 let post_code = headers

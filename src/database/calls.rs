@@ -1,6 +1,6 @@
 use rand::Rng;
 use surrealdb::sql::{Id, Thing};
-use crate::database::types::{ModTier, PostState, PostTable, PostTableFull, SessionToken};
+use crate::database::types::{ModTier, PostState, PostTable, PostTableDB, SessionToken};
 use crate::handler::api::error::{api_error, ApiError};
 use super::*;
 
@@ -22,14 +22,14 @@ impl Database {
             id: Id::String(code.to_string())
         };
 
-        let post_table = self
+        let post_table_db = self
             .query(surql::GET_POST)
             .bind(("post_id", post_table_id))
             .await?
-            .take::<Option<PostTable>>(0)?
+            .take::<Option<PostTableDB>>(0)?
             .ok_or_else(|| api_error!(PostNotFound))?;
 
-        Ok(post_table)
+        Ok(post_table_db.into())
     }
 
     pub async fn get_post_random(&self) -> Result<PostTable, ApiError> {
@@ -47,22 +47,23 @@ impl Database {
             rand::thread_rng().gen_range(0..position_current+1)
         };
 
-        let post_table = self
+        let post_table_db = self
             .query(surql::GET_POST_RANDOM)
             .bind(("position", position))
             .await?
-            .take::<Option<PostTable>>(0)?
+            .take::<Option<PostTableDB>>(0)?
             .ok_or_else(|| api_error!(PostNotFound))?;
 
-        Ok(post_table)
+        Ok(post_table_db.into())
     }
 
-    pub async fn get_post_unverified(&self) -> Result<PostTableFull, ApiError> {
+    pub async fn get_post_unverified(&self) -> Result<PostTable, ApiError> {
         self.query(surql::GET_POST_UNVERIFIED)
             .bind(("unverified_state", PostState::Awaiting))
             .await?
-            .take::<Option<PostTableFull>>(0)?
+            .take::<Option<PostTableDB>>(0)?
             .ok_or_else(|| api_error!(NoPostsLeft))
+            .map(|post_table_db| post_table_db.into())
     }
 
     pub async fn create_mod(

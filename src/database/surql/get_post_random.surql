@@ -1,1 +1,1 @@
-SELECT content, at, state FROM post WHERE <-(verified WHERE position=$position);
+SELECT id, content, at, state FROM post WHERE <-(verified WHERE position=$position);
