@@ -16,7 +16,6 @@ mod handler;
 mod database;
 mod console;
 
-use std::net::SocketAddr;
 use hyper::service::service_fn;
 use hyper_util::rt::TokioIo;
 use limtr::Limtr;
