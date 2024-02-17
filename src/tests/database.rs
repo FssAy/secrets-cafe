@@ -74,8 +74,9 @@ fn manage_posts() {
         let mod_verifier = db.create_mod("verifier", "123", ModTier::Verifier).await.expect("Failed to create a mod!");
         let mut post_code: String;
 
-        // check what happens when we get a random verified post on an empty database.
+        // check what happens when we get a verified post on an empty database.
         assert!(db.get_post_random().await.is_err());
+        assert!(db.get_post_page(0).await.expect("Failed to get a post page!").is_empty());
 
         // check post rejection.
         post_code = db.create_post("Malicious Post!").await.expect("Failed to create a post!");
@@ -83,8 +84,9 @@ fn manage_posts() {
         db.reject_post(&mod_verifier, &post_code, "Post is malicious.").await.expect("Mod with tier Verifier failed to reject a post!");
         db.reject_post(&mod_verifier, &post_code, "Post is malicious.").await.expect_err("Rejected post that has been already rejected!");
 
-        // check if rejected post can be returned by getting a random post.
+        // check if rejected post can be returned.
         assert!(db.get_post_random().await.is_err());
+        assert!(db.get_post_page(0).await.expect("Failed to get a post page!").is_empty());
 
         // check post verification.
         post_code = db.create_post("Simple Post!").await.expect("Failed to create a post!");
@@ -92,7 +94,9 @@ fn manage_posts() {
         db.verify_post(&mod_verifier, &post_code).await.expect("Mod with tier Verifier failed to verify a post!");
         db.verify_post(&mod_verifier, &post_code).await.expect_err("Verified post that has been already verified!");
 
-        // check if verified post can be returned by getting a random post.
+        // check if verified post can be returned.
         db.get_post_random().await.expect("Failed to get a random post!");
+        let posts = db.get_post_page(0).await.expect("Failed to get a post page!");
+        assert!(posts.len() > 0, "Post page did not return any posts!");
     });
 }

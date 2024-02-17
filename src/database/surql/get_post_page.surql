@@ -1,0 +1,1 @@
+SELECT id, content, at, state FROM post WHERE state=$verified_state LIMIT 5 START $page;

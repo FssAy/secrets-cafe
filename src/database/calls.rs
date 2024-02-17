@@ -32,6 +32,21 @@ impl Database {
         Ok(post_table_db.into())
     }
 
+    pub async fn get_post_page(&self, page: usize) -> Result<Vec<PostTable>, ApiError> {
+        let posts = self
+            .query(surql::GET_POST_PAGE)
+            .bind(("verified_state", PostState::Approved))
+            .bind(("page", page))
+            .await?
+            .take::<Vec<PostTableDB>>(0)?;
+
+        let posts = posts.into_iter()
+            .map(|post_table_db| post_table_db.into())
+            .collect();
+
+        Ok(posts)
+    }
+
     pub async fn get_post_random(&self) -> Result<PostTable, ApiError> {
         let position_current = self
             .query(surql::GET_POSITION_CURRENT)
