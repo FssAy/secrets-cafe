@@ -23,6 +23,7 @@ This is a list of things to do before 1.0 release
 - [ ] Rework resource loading. _(?)_
 - [x] Add rate limits.
 - [ ] Add proper API documentation.
+- [ ] Add post page browser.
 
 ---
 [secrets.cafe](https://secrets.cafe) © 2024 by [FssAy](https://github.com/FssAy) is licensed under [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/?ref=chooser-v1)
