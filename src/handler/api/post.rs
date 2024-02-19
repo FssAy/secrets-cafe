@@ -72,7 +72,7 @@ impl Post {
                 }
 
                 let post_code = headers
-                    .get("post-code")
+                    .get("post_code")
                     .map(|value| value.to_str().unwrap_or_default())
                     .unwrap_or_default();
 
@@ -104,8 +104,8 @@ impl Post {
                     .ok_or_else(|| api_error!(InvalidHeader))?
                     .ok_or_else(|| api_error!(InvalidHeader))?;
 
-                let post_id = headers
-                    .get("post_id")
+                let post_code = headers
+                    .get("post_code")
                     .map(|value| value.to_str().ok())
                     .ok_or_else(|| api_error!(InvalidHeader))?
                     .ok_or_else(|| api_error!(InvalidHeader))?;
@@ -118,7 +118,7 @@ impl Post {
 
                 match action {
                     "approve" => {
-                        db.verify_post(token.user_id, post_id).await?;
+                        db.verify_post(token.user_id, post_code).await?;
                     }
                     "reject" => {
                         let reason = headers
@@ -128,7 +128,7 @@ impl Post {
                             )
                             .unwrap_or_else(|| DEFAULT_REJECTION_REASON);
 
-                        db.reject_post(token.user_id, post_id, reason).await?;
+                        db.reject_post(token.user_id, post_code, reason).await?;
                     }
                     "delete" => {}
                     _ => return Err(api_error!(InvalidHeader)),

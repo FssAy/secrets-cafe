@@ -10,7 +10,7 @@ function sanitizeHTML(html) {
 async function getPost(postCode=null, session=null) {
     let headers = {};
     if (postCode && !session) {
-        headers['post-code'] = postCode;
+        headers['post_code'] = postCode;
     }
 
     if (session) {
