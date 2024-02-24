@@ -17,7 +17,7 @@
 
 ### Post - `/api/post`
 - **Method:** `POST`
-- **Description:** Upload the post. Can be called twice from the same IP every 30 minutes. Currently, there isn't a body limit, but will be added soon. 
+- **Description:** Upload the post. Can be called twice from the same IP every 30 minutes. Body size limit is specified in the config. 
 - **Body:** Post content as a HTML.
 - **Response:**
   ```json
