@@ -15,7 +15,7 @@ use std::pin::Pin;
 use std::task::{Context, Poll};
 use lazy_static::lazy_static;
 use responses::*;
-use crate::handler::api::error::api_error;
+use crate::handler::api::error::ApiError;
 use super::*;
 
 #[cfg(feature = "rate-limits")]
@@ -87,13 +87,9 @@ pub async fn handle_api_endpoint(api_path: &str, req: Req, addr: SocketAddr) -> 
     if let Some(api_endpoint) = API_ENDPOINTS.get(api_path) {
         api_endpoint.handle(req, addr).await
     } else {
-        debug!("Not Found");
-        let err = api_error!(InvalidEndpoint);
-        Response::builder()
-            .status(err.code)
-            .body(Full::new(Bytes::from(
-                serde_json::to_string(&err).unwrap()
-            )))
-            .unwrap()
+        debug!("[{}] API endpoint [{}] not found!", addr, api_path);
+        ApiError::InvalidEndpoint(
+            api_path.to_string().into()
+        ).into()
     }
 }

@@ -15,6 +15,7 @@ mod config;
 mod handler;
 mod database;
 mod console;
+mod utils;
 
 use hyper::service::service_fn;
 use hyper_util::rt::TokioIo;

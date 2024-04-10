@@ -20,24 +20,27 @@ impl Moderator {
                     ).await?;
 
                     if ratelimit != 0 {
-                        // todo: return the ratelimit value
-                        return Err(api_error!(TooManyRequests));
+                        return Err(ApiError::TooManyRequests {
+                            limit: ratelimit,
+                        });
                     }
                 }
 
                 let headers = req.headers();
 
+                let mut header = "login";
                 let login = headers
-                    .get("login")
+                    .get(header)
                     .map(|value| value.to_str().ok())
-                    .ok_or_else(|| api_error!(InvalidHeader))?
-                    .ok_or_else(|| api_error!(InvalidHeader))?;
+                    .ok_or_else(|| ApiError::InvalidHeader(header.into()))?
+                    .ok_or_else(|| ApiError::InvalidHeader(header.into()))?;
 
+                header = "pass";
                 let pass = headers
-                    .get("pass")
+                    .get(header)
                     .map(|value| value.to_str().ok())
-                    .ok_or_else(|| api_error!(InvalidHeader))?
-                    .ok_or_else(|| api_error!(InvalidHeader))?;
+                    .ok_or_else(|| ApiError::InvalidHeader(header.into()))?
+                    .ok_or_else(|| ApiError::InvalidHeader(header.into()))?;
 
                 let db: Database = Database::get().await.unwrap();
                 let session = db.create_mod_session(login, pass).await?;
@@ -49,23 +52,26 @@ impl Moderator {
             &Method::PATCH => {
                 let headers = req.headers();
 
+                let mut header = "session";
                 let session = headers
-                    .get("session")
+                    .get(header)
                     .map(|value| value.to_str().ok())
-                    .ok_or_else(|| api_error!(InvalidHeader))?
-                    .ok_or_else(|| api_error!(InvalidHeader))?;
+                    .ok_or_else(|| ApiError::InvalidHeader(header.into()))?
+                    .ok_or_else(|| ApiError::InvalidHeader(header.into()))?;
 
+                header = "pass";
                 let pass = headers
-                    .get("pass")
+                    .get(header)
                     .map(|value| value.to_str().ok())
-                    .ok_or_else(|| api_error!(InvalidHeader))?
-                    .ok_or_else(|| api_error!(InvalidHeader))?;
+                    .ok_or_else(|| ApiError::InvalidHeader(header.into()))?
+                    .ok_or_else(|| ApiError::InvalidHeader(header.into()))?;
 
+                header = "new_pass";
                 let new_pass = headers
-                    .get("new_pass")
+                    .get(header)
                     .map(|value| value.to_str().ok())
-                    .ok_or_else(|| api_error!(InvalidHeader))?
-                    .ok_or_else(|| api_error!(InvalidHeader))?;
+                    .ok_or_else(|| ApiError::InvalidHeader(header.into()))?
+                    .ok_or_else(|| ApiError::InvalidHeader(header.into()))?;
 
                 let token = SessionToken::verify(
                     TokenPack::unpack(session.to_string())?
@@ -80,7 +86,7 @@ impl Moderator {
 
                 Ok(SingleResponse::Ok.as_res())
             }
-            _ => Err(api_error!(MethodNotSupported))
+            _ => Err(ApiError::MethodNotSupported)
         }
     }
 }
