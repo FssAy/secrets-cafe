@@ -1,6 +1,5 @@
 use http_body_util::BodyExt;
 use hyper::Method;
-use limtr::Limtr;
 use crate::config::Config;
 use crate::database::Database;
 use crate::database::types::{PostState, PostTable, SessionToken, TokenPack};
@@ -28,16 +27,19 @@ impl Post {
                     }
                 }
 
-                let ratelimit = Limtr::update_limit(
-                    addr.ip(),
-                    FeatureAPI::PostUpload,
-                    1800,  // 30 minutes
-                    2,
-                ).await?;
+                #[cfg(feature = "rate-limits")]
+                {
+                    let ratelimit = Limtr::update_limit(
+                        addr.ip(),
+                        FeatureAPI::PostUpload,
+                        1800,  // 30 minutes
+                        2,
+                    ).await?;
 
-                if ratelimit != 0 {
-                    // todo: return the ratelimit value
-                    return Err(api_error!(TooManyRequests));
+                    if ratelimit != 0 {
+                        // todo: return the ratelimit value
+                        return Err(api_error!(TooManyRequests));
+                    }
                 }
 
                 let body_parsed = String::from_utf8(body)

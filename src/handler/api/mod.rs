@@ -15,10 +15,10 @@ use std::pin::Pin;
 use std::task::{Context, Poll};
 use lazy_static::lazy_static;
 use responses::*;
-use limtr::Feature;
 use crate::handler::api::error::api_error;
 use super::*;
 
+#[cfg(feature = "rate-limits")]
 #[repr(u16)]
 #[derive(Copy, Clone, Debug)]
 enum FeatureAPI {
@@ -26,7 +26,8 @@ enum FeatureAPI {
     ModLogin,
 }
 
-impl Feature for FeatureAPI {
+#[cfg(feature = "rate-limits")]
+impl limtr::Feature for FeatureAPI {
     fn into_feature(self) -> u16 {
         self as u16
     }

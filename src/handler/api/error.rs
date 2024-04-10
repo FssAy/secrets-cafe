@@ -187,6 +187,7 @@ impl From<TokenError> for ApiError {
     }
 }
 
+#[cfg(feature = "rate-limits")]
 impl From<limtr::Error> for ApiError {
     fn from(_: limtr::Error) -> Self {
         api_error!(InvalidSessionToken)

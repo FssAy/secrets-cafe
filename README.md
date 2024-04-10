@@ -14,6 +14,7 @@ It can be fixed by increasing the stack size with tokio runtime builder, but I d
 ### Features
 - `tls` - This is an internal feature used as a "_dependency_" of other features for serving data over HTTPS.
 - `cloudflare` - Implementation of the TLS to work with Cloudflare certificates.
+- `rate-limits` - Enables rate limits on some API calls.
 
 ### ToDo
 This is a list of things to do before 1.0 release
