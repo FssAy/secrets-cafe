@@ -20,11 +20,6 @@ module.exports = {
         "2xl": "1400px",
       },
     },
-    colors: {
-      bg: '#fff4e0',
-      main: '#FD9745',
-      mainAccent: '#fc7303', // not needed for shadcn
-    },
     borderRadius: {
       base: '5px'
     },
