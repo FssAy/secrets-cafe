@@ -15,10 +15,10 @@ use std::pin::Pin;
 use std::task::{Context, Poll};
 use lazy_static::lazy_static;
 use responses::*;
-use limtr::Feature;
-use crate::handler::api::error::api_error;
+use crate::handler::api::error::ApiError;
 use super::*;
 
+#[cfg(feature = "rate-limits")]
 #[repr(u16)]
 #[derive(Copy, Clone, Debug)]
 enum FeatureAPI {
@@ -26,7 +26,8 @@ enum FeatureAPI {
     ModLogin,
 }
 
-impl Feature for FeatureAPI {
+#[cfg(feature = "rate-limits")]
+impl limtr::Feature for FeatureAPI {
     fn into_feature(self) -> u16 {
         self as u16
     }
@@ -86,13 +87,9 @@ pub async fn handle_api_endpoint(api_path: &str, req: Req, addr: SocketAddr) -> 
     if let Some(api_endpoint) = API_ENDPOINTS.get(api_path) {
         api_endpoint.handle(req, addr).await
     } else {
-        debug!("Not Found");
-        let err = api_error!(InvalidEndpoint);
-        Response::builder()
-            .status(err.code)
-            .body(Full::new(Bytes::from(
-                serde_json::to_string(&err).unwrap()
-            )))
-            .unwrap()
+        debug!("[{}] API endpoint [{}] not found!", addr, api_path);
+        ApiError::InvalidEndpoint(
+            api_path.to_string().into()
+        ).into()
     }
 }

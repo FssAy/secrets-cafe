@@ -15,10 +15,10 @@ mod config;
 mod handler;
 mod database;
 mod console;
+mod utils;
 
 use hyper::service::service_fn;
 use hyper_util::rt::TokioIo;
-use limtr::Limtr;
 use tokio::net::TcpListener;
 use database::Database;
 use console::Console;
@@ -32,7 +32,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     logs::init();
     let cfg = Config::init().await?;
     Database::get().await?;
-    Limtr::init(32).await?;
+
+    #[cfg(feature = "rate-limits")]
+    limtr::Limtr::init(32).await?;
 
     // on the debug mode it might be more performant to skip initializing the Resources as they are not used every time.
     #[cfg(not(debug_assertions))] {
