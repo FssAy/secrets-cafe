@@ -29,7 +29,7 @@ impl Post {
 
                 #[cfg(feature = "rate-limits")]
                 {
-                    let ratelimit = Limtr::update_limit(
+                    let ratelimit = limtr::Limtr::update_limit(
                         addr.ip(),
                         FeatureAPI::PostUpload,
                         1800,  // 30 minutes
