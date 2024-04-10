@@ -1,0 +1,13 @@
+@tailwind base;
+  @tailwind components;
+  @tailwind utilities;
+  
+  @layer base {
+    @font-face {
+      font-family: 'Amatic SC';
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+      src: url(./assets/fonts/Amatic_SC/AmaticSC-Regular.ttf) format('truetype');
+    }
+  }

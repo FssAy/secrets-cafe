@@ -32,7 +32,7 @@ impl Post {
                     addr.ip(),
                     FeatureAPI::PostUpload,
                     1800,  // 30 minutes
-                    2,
+                    10000,
                 ).await?;
 
                 if ratelimit != 0 {
