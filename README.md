@@ -29,5 +29,16 @@ This is a list of things to do before 1.0 release
 ### API
 Check out the [API.md](API.md) file for details.
 
+### Console
+The backend accepts input commands that can be executed at runtime:
+- > `debug` - Responds with Ok status
+- > `reload frontend` - Reloads all resources from "frontend" directory.
+- > `mod add <name> <pass> <tier>` - Adds a new moderator account.
+  > ###### Example: `mod add User1 1234567 1`
+- > `mod authorise <input> <tier>` - Changes mod's permissions tier.
+  > ###### Example: `mod authorise mod:62345321545 3`
+
+Tier numbers can be found at `src/database/types/tier.rs`
+
 ---
 [secrets.cafe](https://secrets.cafe) © 2024 by [FssAy](https://github.com/FssAy) is licensed under [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/?ref=chooser-v1)
