@@ -1,7 +1,7 @@
 use rand::Rng;
 use surrealdb::sql::{Id, Thing};
 use crate::database::types::{ModTier, PostState, PostTable, PostTableDB, SessionToken};
-use crate::handler::api::error::{api_error, ApiError};
+use crate::handler::api::error::ApiError;
 use super::*;
 
 impl Database {
@@ -11,7 +11,7 @@ impl Database {
             .bind(("content", content.as_ref()))
             .await?
             .take::<Option<Thing>>((0, "id"))?
-            .ok_or_else(|| api_error!(DatabaseError))?;
+            .ok_or_else(|| ApiError::DatabaseError)?;
 
         Ok(post_id.id.to_raw())
     }
@@ -27,7 +27,7 @@ impl Database {
             .bind(("post_id", post_table_id))
             .await?
             .take::<Option<PostTableDB>>(0)?
-            .ok_or_else(|| api_error!(PostNotFound))?;
+            .ok_or_else(|| ApiError::PostNotFound)?;
 
         Ok(post_table_db.into())
     }
@@ -52,10 +52,10 @@ impl Database {
             .query(surql::GET_POSITION_CURRENT)
             .await?
             .take::<Option<i64>>((0, "val"))?
-            .ok_or_else(|| api_error!(DatabaseError))?;
+            .ok_or_else(|| ApiError::DatabaseError)?;
 
         let position = if position_current.is_negative() {
-            return Err(api_error!(NoPostsLeft));
+            return Err(ApiError::NoPostsLeft);
         } else if position_current == 0 {
             0
         } else {
@@ -67,7 +67,7 @@ impl Database {
             .bind(("position", position))
             .await?
             .take::<Option<PostTableDB>>(0)?
-            .ok_or_else(|| api_error!(PostNotFound))?;
+            .ok_or_else(|| ApiError::PostNotFound)?;
 
         Ok(post_table_db.into())
     }
@@ -77,7 +77,7 @@ impl Database {
             .bind(("unverified_state", PostState::Awaiting))
             .await?
             .take::<Option<PostTableDB>>(0)?
-            .ok_or_else(|| api_error!(NoPostsLeft))
+            .ok_or_else(|| ApiError::NoPostsLeft)
             .map(|post_table_db| post_table_db.into())
     }
 
@@ -99,7 +99,7 @@ impl Database {
             .bind(("tier", tier as u8))
             .await?
             .take::<Option<Thing>>((0, "id"))?
-            .ok_or_else(|| api_error!(DatabaseError))?;
+            .ok_or_else(|| ApiError::DatabaseError)?;
 
         Ok(mod_id.id.to_raw())
     }
@@ -116,25 +116,25 @@ impl Database {
             .await?;
 
         let phash = response.take::<Option<String>>((0, "phash"))?
-            .ok_or_else(|| api_error!(DatabaseError))?;
+            .ok_or_else(|| ApiError::DatabaseError)?;
 
         let is_password_same = bcrypt::verify(password.as_ref(), phash.as_str())
             .unwrap_or(false);
 
         if !is_password_same {
-            return Err(api_error!(InvalidPassword));
+            return Err(ApiError::InvalidPassword);
         }
 
         let mod_id = response.take::<Option<Thing>>((0, "id"))?
             .map(|thing| thing.id.to_raw())
-            .ok_or_else(|| api_error!(DatabaseError))?;
+            .ok_or_else(|| ApiError::DatabaseError)?;
 
         let token = SessionToken::new(mod_id)
             .sign()
             .await
             .map_err(|_| {
                 error!("CRITICAL! Signing session for [{}] failed! This should never happen, check your HMAC key!", name.as_ref());
-                api_error!(DatabaseError)
+                ApiError::DatabaseError
             })?
             .pack();
 
@@ -164,7 +164,7 @@ impl Database {
             .take::<Option<Thing>>((0, "id"))?;
 
         match mod_id {
-            None => Err(api_error!(ModNotFound)),
+            None => Err(ApiError::ModNotFound),
             Some(_) => Ok(())
         }
     }
@@ -187,13 +187,13 @@ impl Database {
 
         let phash = response
             .take::<Option<String>>((0, "phash"))?
-            .ok_or_else(|| api_error!(DatabaseError))?;
+            .ok_or_else(|| ApiError::DatabaseError)?;
 
         let is_password_same = bcrypt::verify(password.as_ref(), phash.as_str())
             .unwrap_or(false);
 
         if !is_password_same {
-            return Err(api_error!(InvalidPassword));
+            return Err(ApiError::InvalidPassword);
         }
 
         let phash_new = bcrypt::hash(

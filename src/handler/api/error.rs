@@ -1,124 +1,20 @@
-/// This macro is the easiest way to create api errors with a specific status code without a derive macro.
-macro_rules! api_error {
-    (InvalidEndpoint) => {
-        crate::handler::api::error::ApiError {
-            code: 404,
-            error: crate::handler::api::error::ApiErrorType::InvalidEndpoint,
-        }
-    };
-
-    (DatabaseError) => {
-        crate::handler::api::error::ApiError {
-            code: 500,
-            error: crate::handler::api::error::ApiErrorType::DatabaseError,
-        }
-    };
-
-    (AlreadyExists) => {
-        crate::handler::api::error::ApiError {
-            code: 409,
-            error: crate::handler::api::error::ApiErrorType::AlreadyExists,
-        }
-    };
-
-    (InvalidPassword) => {
-        crate::handler::api::error::ApiError {
-            code: 401,
-            error: crate::handler::api::error::ApiErrorType::InvalidPassword,
-        }
-    };
-
-    (InvalidSessionToken) => {
-        crate::handler::api::error::ApiError {
-            code: 401,
-            error: crate::handler::api::error::ApiErrorType::InvalidSessionToken,
-        }
-    };
-
-    (ModNotFound) => {
-        crate::handler::api::error::ApiError {
-            code: 404,
-            error: crate::handler::api::error::ApiErrorType::ModNotFound,
-        }
-    };
-
-    (MethodNotSupported) => {
-        crate::handler::api::error::ApiError {
-            code: 405,
-            error: crate::handler::api::error::ApiErrorType::MethodNotSupported,
-        }
-    };
-
-    (NetworkError) => {
-        crate::handler::api::error::ApiError {
-            code: 500,
-            error: crate::handler::api::error::ApiErrorType::NetworkError,
-        }
-    };
-
-    (InvalidBody) => {
-        crate::handler::api::error::ApiError {
-            code: 400,
-            error: crate::handler::api::error::ApiErrorType::InvalidBody,
-        }
-    };
-
-    (PostNotFound) => {
-        crate::handler::api::error::ApiError {
-            code: 404,
-            error: crate::handler::api::error::ApiErrorType::PostNotFound,
-        }
-    };
-
-    (InvalidHeader) => {
-        crate::handler::api::error::ApiError {
-            code: 400,
-            error: crate::handler::api::error::ApiErrorType::InvalidHeader,
-        }
-    };
-
-    (MissingPermission) => {
-        crate::handler::api::error::ApiError {
-            code: 401,
-            error: crate::handler::api::error::ApiErrorType::MissingPermission,
-        }
-    };
-
-    (NoPostsLeft) => {
-        crate::handler::api::error::ApiError {
-            code: 404,
-            error: crate::handler::api::error::ApiErrorType::NoPostsLeft,
-        }
-    };
-
-    (RateLimitSystemFailed) => {
-        crate::handler::api::error::ApiError {
-            code: 500,
-            error: crate::handler::api::error::ApiErrorType::RateLimitSystemFailed,
-        }
-    };
-
-    (TooManyRequests) => {
-        crate::handler::api::error::ApiError {
-            code: 429,
-            error: crate::handler::api::error::ApiErrorType::TooManyRequests,
-        }
-    };
-}
-
 use std::str::FromStr;
 use http_body_util::Full;
 use hyper::body::Bytes;
 use hyper::{Response, StatusCode};
-pub(crate) use api_error;
 use crate::database::types::TokenError;
+use crate::handler::api::error::ApiError::AlreadyExists;
 use crate::handler::Res;
+use crate::utils::AnyString;
 
 #[derive(Serialize, Debug, Clone)]
-pub enum ApiErrorType {
-    InvalidEndpoint,
+#[serde(tag = "error", content = "data")]
+#[serde(rename_all = "camelCase")]
+#[non_exhaustive]
+pub enum ApiError {
+    InvalidEndpoint(AnyString),
     DatabaseError,
-    AlreadyExists,
+    AlreadyExists(AnyString),
     InvalidPassword,
     InvalidSessionToken,
     ModNotFound,
@@ -126,18 +22,31 @@ pub enum ApiErrorType {
     NetworkError,
     InvalidBody,
     PostNotFound,
-    InvalidHeader,
+    InvalidHeader(AnyString),
     MissingPermission,
     DatabaseRejectedTheRequest,
     NoPostsLeft,
     RateLimitSystemFailed,
-    TooManyRequests,
+    TooManyRequests {
+        limit: u64,
+    },
 }
 
-#[derive(Serialize, Debug, Clone)]
-pub struct ApiError {
-    pub code: u16,
-    pub error: ApiErrorType,
+impl ApiError {
+    fn get_http_code(&self) -> u16 {
+        use ApiError::*;
+
+        match self {
+            InvalidPassword | InvalidSessionToken | InvalidBody | InvalidHeader{..} => 400,
+            InvalidEndpoint{..} | ModNotFound | PostNotFound | NoPostsLeft => 404,
+            MissingPermission => 403,
+            MethodNotSupported => 405,
+            AlreadyExists{..} => 409,
+            TooManyRequests{..} => 429,
+            DatabaseError | NetworkError | DatabaseRejectedTheRequest | RateLimitSystemFailed => 500,
+            _ => 500,
+        }
+    }
 }
 
 impl From<surrealdb::Error> for ApiError {
@@ -155,25 +64,20 @@ impl From<surrealdb::Error> for ApiError {
         match err {
             surrealdb::Error::Db(err_db) => match err_db {
                 // todo: find out which variants should return different error
-                RecordExists{..} | IndexExists{..} => api_error!(AlreadyExists),
+                RecordExists { thing } => AlreadyExists(thing.into()),
+                IndexExists{ index, .. } => AlreadyExists(index.into()),
                 FieldValue { value, thing, .. } => {
                     if thing.starts_with("error:") {
-                        if let Ok(status) = StatusCode::from_str(value.as_str()) {
-                            // todo: get the ApiErrorType from the error
-                            return ApiError {
-                                code: status.as_u16(),
-                                error: ApiErrorType::DatabaseRejectedTheRequest,
-                            };
-                        }
+                        return ApiError::DatabaseRejectedTheRequest;
                     }
 
-                    api_error!(DatabaseError)
+                    ApiError::DatabaseError
                 }
-                _ => api_error!(DatabaseError),
+                _ => ApiError::DatabaseError,
             }
             surrealdb::Error::Api(err_db_api) => match err_db_api {
                 // todo: find out which variants should return different error
-                _ => api_error!(DatabaseError)
+                _ => ApiError::DatabaseError
             }
         }
     }
@@ -183,23 +87,23 @@ impl From<surrealdb::Error> for ApiError {
 // Creating the token should never really fail, so returning InvalidSessionToken is not ideal.
 impl From<TokenError> for ApiError {
     fn from(_: TokenError) -> Self {
-        api_error!(InvalidSessionToken)
+        ApiError::InvalidSessionToken
     }
 }
 
+#[cfg(feature = "rate-limits")]
 impl From<limtr::Error> for ApiError {
     fn from(_: limtr::Error) -> Self {
-        api_error!(InvalidSessionToken)
+        ApiError::RateLimitSystemFailed
     }
 
 }
-
 
 impl Into<Res> for ApiError {
     fn into(self) -> Res {
         let error = serde_json::to_string(&self).unwrap();
         Response::builder()
-            .status(self.code)
+            .status(self.get_http_code())
             .body(Full::new(Bytes::from(error)))
             .unwrap()
     }

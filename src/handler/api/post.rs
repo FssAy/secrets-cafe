@@ -1,6 +1,5 @@
 use http_body_util::BodyExt;
 use hyper::Method;
-use limtr::Limtr;
 use crate::config::Config;
 use crate::database::Database;
 use crate::database::types::{PostState, PostTable, SessionToken, TokenPack};
@@ -19,29 +18,33 @@ impl Post {
                 let mut body = Vec::new();
                 let mut body_stream = req.into_body();
                 while let Some(frame) = body_stream.frame().await {
-                    let frame = frame.map_err(|_| api_error!(InvalidBody))?;
+                    let frame = frame.map_err(|_| ApiError::InvalidBody)?;
                     if let Ok(data) = frame.into_data() {
                         if body.len() + data.len() > body_max_size {
-                            return Err(api_error!(InvalidBody));
+                            return Err(ApiError::InvalidBody);
                         }
                         body.extend(data.to_vec());
                     }
                 }
 
-                let ratelimit = Limtr::update_limit(
-                    addr.ip(),
-                    FeatureAPI::PostUpload,
-                    1800,  // 30 minutes
-                    10000,
-                ).await?;
+                #[cfg(feature = "rate-limits")]
+                {
+                    let ratelimit = limtr::Limtr::update_limit(
+                        addr.ip(),
+                        FeatureAPI::PostUpload,
+                        1800,  // 30 minutes
+                        2,
+                    ).await?;
 
-                if ratelimit != 0 {
-                    // todo: return the ratelimit value
-                    return Err(api_error!(TooManyRequests));
+                    if ratelimit != 0 {
+                        return Err(ApiError::TooManyRequests {
+                            limit: ratelimit,
+                        });
+                    }
                 }
 
                 let body_parsed = String::from_utf8(body)
-                    .map_err(|_| api_error!(InvalidBody))?;
+                    .map_err(|_| ApiError::InvalidBody)?;
 
                 let db: Database = Database::get().await.unwrap();
 
@@ -57,7 +60,7 @@ impl Post {
                 // Get a post for verification
                 if let Some(session) = headers
                     .get("session")
-                    .map(|value| value.to_str().map_err(|_| api_error!(InvalidHeader)))
+                    .map(|value| value.to_str().map_err(|_| ApiError::InvalidHeader("session".into())))
                 {
                     let session = session?;
                     let _ = SessionToken::verify(
@@ -92,23 +95,26 @@ impl Post {
             &Method::PATCH => {
                 let headers = req.headers();
 
+                let mut header = "session";
                 let session = headers
-                    .get("session")
+                    .get(header)
                     .map(|value| value.to_str().ok())
-                    .ok_or_else(|| api_error!(InvalidHeader))?
-                    .ok_or_else(|| api_error!(InvalidHeader))?;
+                    .ok_or_else(|| ApiError::InvalidHeader(header.into()))?
+                    .ok_or_else(|| ApiError::InvalidHeader(header.into()))?;
 
+                header = "action";
                 let action = headers
-                    .get("action")
+                    .get(header)
                     .map(|value| value.to_str().ok())
-                    .ok_or_else(|| api_error!(InvalidHeader))?
-                    .ok_or_else(|| api_error!(InvalidHeader))?;
+                    .ok_or_else(|| ApiError::InvalidHeader(header.into()))?
+                    .ok_or_else(|| ApiError::InvalidHeader(header.into()))?;
 
+                header = "post_code";
                 let post_code = headers
-                    .get("post_code")
+                    .get(header)
                     .map(|value| value.to_str().ok())
-                    .ok_or_else(|| api_error!(InvalidHeader))?
-                    .ok_or_else(|| api_error!(InvalidHeader))?;
+                    .ok_or_else(|| ApiError::InvalidHeader(header.into()))?
+                    .ok_or_else(|| ApiError::InvalidHeader(header.into()))?;
 
                 let db: Database = Database::get().await.unwrap();
 
@@ -131,12 +137,12 @@ impl Post {
                         db.reject_post(token.user_id, post_code, reason).await?;
                     }
                     "delete" => {}
-                    _ => return Err(api_error!(InvalidHeader)),
+                    _ => return Err(ApiError::InvalidHeader(action.to_string().into())),
                 }
 
                 Ok(SingleResponse::Ok.as_res())
             }
-            _ => Err(api_error!(MethodNotSupported))
+            _ => Err(ApiError::MethodNotSupported)
         }
     }
 }
