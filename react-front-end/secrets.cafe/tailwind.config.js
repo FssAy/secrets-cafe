@@ -1,7 +1,5 @@
 /** @type {import('tailwindcss').Config} */
-import tailwindcssAnimate from 'tailwindcss-animate';
-
-export default {
+module.exports = {
   darkMode: ["class"],
   content: [
     './pages/**/*.{ts,tsx}',
@@ -13,6 +11,7 @@ export default {
   theme: {
     fontFamily: {
       'amatic': ['Amatic SC'],
+      
     },
     container: {
       center: true,
@@ -41,5 +40,5 @@ export default {
       },
     },
   },
-  plugins: [tailwindcssAnimate],
+  plugins: [require("tailwindcss-animate")],
 }
