@@ -1,17 +1,14 @@
-import { useState } from "react";
-import Navbar from "./components/navbar";
-import Landing from "./components/landing";
-import Footer from "./components/footer";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import HomeContent from './components/Layout/HomeContent';
 
 function App() {
-  const [count, setCount] = useState(0);
 
   return (
-    <>
-      <Navbar />
-      <Landing />
-      <Footer />
-    </>
+    <Router>
+      <Routes>
+        <Route path="/" element={<HomeContent />} />
+      </Routes>
+    </Router>
   );
 }
 
