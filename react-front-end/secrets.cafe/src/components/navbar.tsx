@@ -21,25 +21,25 @@ export default function Navbar() {
         </a>
         <a
           href="/discover"
-          className="grid row-start-2 items-center justify-center"
+          className="grid row-start-2 items-center justify-center text-2xl font-amatic font-medium"
         >
           Discover
         </a>
         <a
           href="/donate"
-          className="grid row-start-2 items-center justify-center"
+          className="grid row-start-2 items-center justify-center text-2xl font-amatic font-medium"
         >
           Donate
         </a>
         <a
           href="/develop"
-          className="grid row-start-2 items-center justify-center"
+          className="grid row-start-2 items-center justify-center text-2xl font-amatic font-medium"
         >
           Develop
         </a>
         <a
           href="/contribute"
-          className="grid row-start-2 items-center justify-center"
+          className="grid row-start-2 items-center justify-center text-2xl font-amatic font-medium"
         >
           Contribute
         </a>

@@ -1,13 +1,12 @@
-import Footer from "@/components/footer";
-import Landing from "@/components/landing";
 import Navbar from "@/components/navbar";
+import Footer from "@/components/footer";
 import Donate from "@/components/donate";
 
-export default function LandingPage() {
+export default function DonatePage() {
   return (
     <div>
       <Navbar />
-      <Landing />
+      <Donate />
       <Footer />
     </div>
   );
