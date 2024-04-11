@@ -1,10 +1,6 @@
 import Latte from "../assets/Latte.svg";
 ("use client");
 
-import * as React from "react";
-
-import IntrovertCat from "@/assets/github-mark-white.svg";
-
 export default function Navbar() {
   return (
     <>
