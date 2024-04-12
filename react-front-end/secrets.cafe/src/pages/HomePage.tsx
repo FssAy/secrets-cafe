@@ -2,11 +2,13 @@ import Navbar from "@/components/Layout/TopNav/navbar";
 import Footer from "@/components/Layout/Footer";
 import Home from "@/components/home";
 
-export default function HomePage () {
+export default function HomePage() {
     return (
-        <div>
+        <div className="flex flex-col min-h-screen">
             <Navbar />
-            <Home />
+            <main className="flex-grow">
+                <Home />
+            </main>
             <Footer />
         </div>
     );

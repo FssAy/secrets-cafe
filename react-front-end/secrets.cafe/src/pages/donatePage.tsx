@@ -4,9 +4,11 @@ import Donate from "@/components/donate";
 
 export default function DonatePage() {
   return (
-    <div>
+    <div className="flex flex-col min-h-screen">
       <Navbar />
-      <Donate />
+      <main className="flex-grow">
+        <Donate />
+      </main>
       <Footer />
     </div>
   );

@@ -4,9 +4,11 @@ import Footer from "@/components/Layout/Footer";
 
 export default function DevelopPage() {
   return (
-    <div>
+    <div className="flex flex-col min-h-screen">
       <Navbar />
-      <Develop />
+      <main className="flex-grow">
+        <Develop />
+      </main>
       <Footer />
     </div>
   );
