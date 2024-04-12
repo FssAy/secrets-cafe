@@ -13,7 +13,7 @@ export default function Contribute() {
                 <img className=" w-64" src={GitCat} alt="heart emoji" />
             </div>
             <h1 className="col-span-3 justify-center items-center text-center text-7xl font-amatic font-medium">
-                Develop
+                Contribute
             </h1>
             <h2 className="col-span-3 text-center p-3 md:col-start-2 md:col-end-3">
                 This project is fully open source, visit our GitHub repository and
