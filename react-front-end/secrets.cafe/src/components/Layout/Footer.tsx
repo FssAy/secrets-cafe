@@ -2,7 +2,7 @@ import IntrovertCat from "@/assets/github-mark.svg";
 
 const Footer = () => {
     return (
-        <footer className="py-4 bg-gray-100">
+        <footer className="py-4 bg-gray-100 ">
             <div className="container mx-auto px-4 flex items-center justify-center space-x-4">
                 <a
                     href="https://creativecommons.org/licenses/by-nc/4.0/?ref=chooser-v1"
