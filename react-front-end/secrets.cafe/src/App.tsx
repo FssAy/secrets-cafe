@@ -3,6 +3,7 @@ import HomePage from "./pages/HomePage";
 import DonatePage from "@/pages/DonatePage";
 import DevelopPage from "@/pages/DevelopPage";
 import DiscoverPage from "./pages/DiscoverPage";
+import ContributePage from "./pages/ContributePage";
 
 function App() {
   return (
@@ -12,7 +13,7 @@ function App() {
         <Route path="/discover" element={<DiscoverPage />} />
         <Route path="/donate" element={<DonatePage />} />
         <Route path="/develop" element={<DevelopPage />} />
-        <Route path="/contribute" element={<DevelopPage />} />
+        <Route path="/contribute" element={<ContributePage />} />
       </Routes>
     </Router>
   );
