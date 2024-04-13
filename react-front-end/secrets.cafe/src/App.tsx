@@ -5,6 +5,7 @@ import DevelopPage from "@/pages/DevelopPage";
 import DiscoverPage from "@/pages/DiscoverPage";
 import ContributePage from "@/pages/ContributePage";
 import WritePage from "@/pages/WritePage";
+import RulesPage from "@/pages/RulesPage";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Route path="/develop" element={<DevelopPage />} />
         <Route path="/contribute" element={<ContributePage />} />
         <Route path="/write" element={<WritePage />} />
+        <Route path="/rules" element={<RulesPage />} />
       </Routes>
     </Router>
   );
