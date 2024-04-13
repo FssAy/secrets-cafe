@@ -28,7 +28,7 @@ export default function HomePage() {
                 <Navbar />
                 <main className="flex-grow flex flex-col items-center justify-center">
                     <Write />
-                    <div className="flex space-x-4 my-8">
+                    <div className="flex space-x-4 my-8 justify-center">
                         <Link to="/rules">
                             <Button size="lg">Rule</Button>
                         </Link>

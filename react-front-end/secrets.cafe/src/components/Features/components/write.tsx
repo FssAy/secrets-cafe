@@ -9,6 +9,7 @@ export default function Write() {
       </div>
       <h1 className="col-span-3 justify-center items-center text-center text-5xl font-amatic font-medium">
         Share your story, secret, or anything you wish to.
+        <br />
         Remember it will go public and could never be removed.
       </h1>
       <h2 className="col-span-3 text-center p-3 md:col-start-2 md:col-end-3">
