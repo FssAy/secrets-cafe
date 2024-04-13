@@ -5,7 +5,7 @@ import Latte from "@/assets/Latte.svg";
 export default function Navbar() {
   return (
     <>
-      <nav className="flex justify-between items-center p-4 mb-4">
+      <nav className="flex justify-between items-center p-4">
         <div className="flex items-center">
           <img
             src={Latte}
