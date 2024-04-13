@@ -1,13 +1,14 @@
 import Latte from "../assets/Latte.svg";
 
 export default function Home() {
+
   return (
     <>
-      <div className="flex flex-col min-h-screen">
-        <main className="flex-grow py-10">
+      <div className="flex flex-col">
+        <main className="flex-grow">
           <div className="container mx-auto px-4">
-            <div className="mb-8 flex justify-center">
-              <img src={Latte} alt="Secrets Cafe" className="w-56" />
+            <div className="flex justify-center">
+              <img src={Latte} alt="Secrets Cafe" className="w-40 h-25" />
             </div>
             <h1 className="mb-6 text-center text-6xl font-amatic font-medium">
               secrets.cafe
