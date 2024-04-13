@@ -1,4 +1,4 @@
-import Latte from "../assets/Latte.svg";
+import Latte from "@/assets/Latte.svg";
 
 export default function Home() {
 

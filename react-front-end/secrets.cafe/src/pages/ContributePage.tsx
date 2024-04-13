@@ -1,6 +1,6 @@
 import Navbar from "@/components/Layout/TopNav/navbar";
-import Footer from "@/components/Layout/Footer";
-import Contribute from "@/components/contribute";
+import Footer from "@/components/Layout/Footer/Footer";
+import Contribute from "@/components/Features/components/contribute";
 
 export default function ContributePage() {
     return (

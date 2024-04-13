@@ -1,6 +1,6 @@
 import Navbar from "@/components/Layout/TopNav/navbar";
-import Footer from "@/components/Layout/Footer";
-import Home from "@/components/home";
+import Footer from "@/components/Layout/Footer/Footer";
+import Home from "@/components/Features/components/home";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 

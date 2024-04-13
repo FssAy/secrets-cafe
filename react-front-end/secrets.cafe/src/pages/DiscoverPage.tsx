@@ -1,6 +1,6 @@
 import Navbar from "@/components/Layout/TopNav/navbar";
-import Footer from "@/components/Layout/Footer";
-import Discover from "@/components/discover";
+import Footer from "@/components/Layout/Footer/Footer";
+import Discover from "@/components/Features/components/discover";
 
 export default function DiscoverPage() {
     return (

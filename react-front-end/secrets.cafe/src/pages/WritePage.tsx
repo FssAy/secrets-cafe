@@ -1,6 +1,6 @@
 import Navbar from "@/components/Layout/TopNav/navbar";
-import Footer from "@/components/Layout/Footer";
-import Write from "@/components/write";
+import Footer from "@/components/Layout/Footer/Footer";
+import Write from "@/components/Features/components/write";
 import EditPage from "@/pages/EditPage";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";

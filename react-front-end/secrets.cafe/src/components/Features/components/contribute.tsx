@@ -1,5 +1,5 @@
 import GitCat from "@/assets/github-mark.svg"
-import { Button } from "./ui/button";
+import { Button } from "../../ui/button";
 
 export default function Contribute() {
 

@@ -1,6 +1,6 @@
 import Navbar from "@/components/Layout/TopNav/navbar";
-import Develop from "@/components/develop";
-import Footer from "@/components/Layout/Footer";
+import Develop from "@/components/Features/components/develop";
+import Footer from "@/components/Layout/Footer/Footer";
 
 export default function DevelopPage() {
   return (

@@ -1,6 +1,6 @@
 import Navbar from "@/components/Layout/TopNav/navbar";
-import Footer from "@/components/Layout/Footer";
-import Donate from "@/components/donate";
+import Footer from "@/components/Layout/Footer/Footer";
+import Donate from "@/components/Features/components/donate";
 
 export default function DonatePage() {
   return (

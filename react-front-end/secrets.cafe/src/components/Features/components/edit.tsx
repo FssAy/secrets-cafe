@@ -1,4 +1,4 @@
-import TextEditor from "./utils/TextEditor";
+import TextEditor from "../../utils/TextEditor";
 
 export default function Edit() {
 

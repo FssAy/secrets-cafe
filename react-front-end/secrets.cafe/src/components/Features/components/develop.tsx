@@ -1,4 +1,4 @@
-import { Button } from "./ui/button";
+import { Button } from "../../ui/button";
 import Cog from "@/assets/Cog.svg";
 
 export default function Develop() {

@@ -1,5 +1,5 @@
 import HeartEmoji from "@/assets/heart-emoji.svg";
-import { Button } from "./ui/button";
+import { Button } from "../../ui/button";
 
 export default function Donate() {
   function donate() {
