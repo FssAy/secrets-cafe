@@ -42,4 +42,8 @@ DEFINE TABLE rejected;
 DEFINE FIELD at ON TABLE rejected TYPE datetime VALUE time::now();
 DEFINE FIELD reason ON TABLE rejected TYPE string;
 
+DEFINE TABLE ban SCHEMAFULL;
+DEFINE FIELD at ON TABLE ban TYPE datetime VALUE time::now();
+DEFINE FIELD active ON TABLE ban TYPE bool DEFAULT true;
+
 COMMIT TRANSACTION;

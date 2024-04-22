@@ -138,6 +138,16 @@ impl Post {
 
                         db.reject_post(token.user_id, post_code, reason).await?;
                     }
+                    "ban" => {
+                        let reason = headers
+                            .get("reason")
+                            .map(|value|
+                                value.to_str().unwrap_or_else(|_| DEFAULT_REJECTION_REASON)
+                            )
+                            .unwrap_or_else(|| DEFAULT_REJECTION_REASON);
+
+                        db.ban_post(token.user_id, post_code, reason).await?;
+                    }
                     "delete" => {}
                     _ => return Err(ApiError::InvalidHeader(action.to_string().into())),
                 }

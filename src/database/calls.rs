@@ -271,4 +271,15 @@ impl Database {
 
         Ok(())
     }
+
+    pub async fn ban_post(
+        &self,
+        mod_id: impl ToString,
+        post_id: impl ToString,
+        reason: impl AsRef<str>,
+    ) -> Result<(), ApiError> {
+        // todo: Finish.
+
+        Ok(())
+    }
 }

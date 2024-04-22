@@ -147,6 +147,9 @@
                   <button type="button" id="btn-reject" class="mod-button1 button" onclick="postReject()">
                     Reject
                   </button>
+                  <button type="button" id="btn-ban" class="mod-button1 button" onclick="postBan()">
+                    Ban
+                  </button>
                 </div>
                 <button type="button" id="btn-approve" class="mod-button2 button" onclick="postApprove()">
                   Approve
@@ -352,6 +355,15 @@
         const confirmed = confirm("Are you sure you want to REJECT this post?");
         if (confirmed) {
           if (await postPatch('reject', inReason.value)) {
+            clearRenderedPost();
+          }
+        }
+      }
+
+      async function postBan() {
+        const confirmed = confirm("Are you sure you want to BAN this post adn the user?");
+        if (confirmed) {
+          if (await postPatch('ban', inReason.value)) {
             clearRenderedPost();
           }
         }
