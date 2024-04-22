@@ -4,6 +4,7 @@ use crate::config::Config;
 use crate::database::Database;
 use crate::database::types::{PostState, PostTable, SessionToken, TokenPack};
 use crate::handler::api::error::ApiError;
+use crate::utils::IPHash;
 use super::*;
 
 const DEFAULT_REJECTION_REASON: &str = "Not provided.";
@@ -47,9 +48,10 @@ impl Post {
                     .map_err(|_| ApiError::InvalidBody)?;
 
                 let db: Database = Database::get().await.unwrap();
+                let iph = IPHash::new(addr.ip());
 
                 Ok(PostResponse {
-                    code: db.create_post(body_parsed).await?
+                    code: db.create_post(body_parsed, iph).await?
                 }.as_res())
             }
             &Method::GET => {

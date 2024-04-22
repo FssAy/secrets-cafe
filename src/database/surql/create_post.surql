@@ -1,1 +1,1 @@
-CREATE ONLY post SET content = $content RETURN id;
+CREATE ONLY post SET content=$content, iph=$iph RETURN id;

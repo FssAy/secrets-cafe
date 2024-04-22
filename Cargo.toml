@@ -43,6 +43,7 @@ base64 = "0.21"
 sha2 = "0.10.8"
 command-engine = { git = "https://github.com/VulcoLibs/command-engine" }
 rand = "0.8.5"
+blake3 = "1.5"
 limtr = { version = "0.2.0", optional = true }
 tokio-rustls = { version = "0.25.0", optional = true }
 rustls = { version = "0.22.2", optional = true }

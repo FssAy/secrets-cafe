@@ -2,13 +2,17 @@ use rand::Rng;
 use surrealdb::sql::{Id, Thing};
 use crate::database::types::{ModTier, PostState, PostTable, PostTableDB, SessionToken};
 use crate::handler::api::error::ApiError;
+use crate::utils::IPHash;
 use super::*;
 
 impl Database {
-    pub async fn create_post(&self, content: impl AsRef<str>) -> Result<String, ApiError> {
+    pub async fn create_post(&self, content: impl AsRef<str>, iph: IPHash) -> Result<String, ApiError> {
+        let iph: String = iph.into();
+
         let post_id = self
             .query(surql::CREATE_POST)
             .bind(("content", content.as_ref()))
+            .bind(("iph", iph))
             .await?
             .take::<Option<Thing>>((0, "id"))?
             .ok_or_else(|| ApiError::DatabaseError)?;
