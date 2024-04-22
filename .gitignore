@@ -6,5 +6,8 @@
 /src/secrets/*
 !/src/secrets/README.md
 
+# Config
+/config.json
+
 # IDE settings
 /.idea
