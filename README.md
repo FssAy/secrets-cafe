@@ -3,6 +3,7 @@ Source of the web page [secrets.cafe](https://secrets.cafe/) which is a platform
 
 Currently, this is not a finished product, it lacks many features and is filled with bugs. 
 I am not a frontend developer, so the website lacks proper support for mobile devices and the JS scripts might have a lot of issues.
+If you would like to help see [Contributions](#contributions) section.
 
 ### Usage
 If you want to run **secrets.cafe** locally I would recommend building it in a release mode without any features. <br>
@@ -26,8 +27,29 @@ This is a list of things to do before 1.0 release
 - [ ] Add proper API documentation.
 - [ ] Add post page browser.
 
+### Contributions
+The backend works by serving static vanilla files. 
+To comply with the backend it's important that your framework of choice allows to build the project into static vanilla files.
+
+Please put the frontend source files into the [frontend-src](frontend-src) directory. 
+It should also contain a brief tutorial on how to build the project. 
+If that's possible it would be amazing if the build process could automatically update the [frontend](frontend) directory.
+
+New static vanilla files should be placed into [frontend](frontend) directory.
+If you want to add new files, or remove the existing ones please update the [resources](frontend/resources.json) file.
+<br>
+_(Files placed in the section `"other"` might not work correctly, if that happens please notify me)_
+
+Any additional details like API endpoints and style guidelines can be found at [docs](docs) directory.
+You don't have to follow the style guidelines.
+
+For any questions please create an issue, or join [this](https://opensourceforce.net/discord) discord server and visit the [Secrets Cafe channel](https://canary.discord.com/channels/913584348937207839/1213547496375189534).
+
+**These are the current reworks that are being worked on:**
+- https://github.com/mk-nlp/secrets-cafe
+
 ### API
-Check out the [API.md](API.md) file for details.
+Check out the [API.md](docs/API.md) file for details.
 
 ### Console
 The backend accepts input commands that can be executed at runtime:
