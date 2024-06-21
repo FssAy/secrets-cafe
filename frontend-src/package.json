@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "react-rte": "^0.16.5"
+  },
+  "devDependencies": {
+    "@types/react-rte": "^0.16.8"
+  }
+}
